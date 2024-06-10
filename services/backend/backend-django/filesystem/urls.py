@@ -1,0 +1,7 @@
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path("list", views.get_tree_at, name="get_tree_at"),
+]
