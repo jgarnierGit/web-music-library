@@ -14,13 +14,21 @@ def get_tree(path, level):
         * Large directories may cause out of memory or timeout. use pagination and limit size...
 
     """
-    tree = {"id": path + str(level), "name": path, "type": "folder", "children": []}
+    tree = {
+        "id": path + str(level),
+        "name": os.path.normpath(path).split(os.sep)[-1],
+        "path": path,
+        "folders": [],
+        "musics": [],
+    }
     for p in os.listdir(path):
         p_path = os.path.join(path, p)
         if os.path.isdir(p_path) and level > 1:
-            tree["children"].append(get_tree(p_path, level - 1))
-        elif os.path.isfile(p_path):
-            tree["children"].append({"name": p, "type": "file"})
+            tree["folders"].append(get_tree(p_path, level - 1))
+        elif os.path.isfile(p_path) and os.path.splitext(p_path)[1] in AUDIO_EXTENSIONS:
+            tree["musics"].append(
+                {"name": p, "path": os.path.relpath(p_path, MUSIC_PATH)}
+            )
     return tree
 
 

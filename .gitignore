@@ -25,6 +25,7 @@ package-lock.json
 
 data/*
 pgdata/*
+figma
 /test-results/
 /playwright-report/
 /blob-report/

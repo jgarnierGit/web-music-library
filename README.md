@@ -15,3 +15,6 @@ root/root
 
 configuration
 MUSIC_LIBRARY_PATH : path to your music folder
+
+nginx to access music folder via web browser
+localhost:8081/music
