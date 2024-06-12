@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
+import type { Music } from "~/commons/interfaces";
 
 export const usePlaylistStore = defineStore('playlist', () => {
-    const currentPlaying = ref<string>();
+    const currentPlaying = ref<Music>();
 
     const isPlaying = computed(() => !!currentPlaying.value);
 
-    function setCurrentPlaying(path: string) {
-        currentPlaying.value = path;
+    function setCurrentPlaying(music: Music) {
+        currentPlaying.value = music;
     }
 
     return { currentPlaying, isPlaying, setCurrentPlaying };

@@ -3,9 +3,8 @@
         <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" :title="musicFolder.name" />
         </template>
-        <v-list-item v-for="(music, i) in musicFolder.musics" :title="music.name" @click="startPlay(music)">
+        <v-list-item v-for="(music, i) in musicFolder.musics" :title="music.name" @click="startPlay(music)" />
 
-        </v-list-item>
         <MusicTreeGroup v-for="(folder, i) in musicFolder.folders" v-model="musicFolder.folders[i]"
             :depth="depth + 1" />
     </v-list-group>
@@ -25,7 +24,7 @@ const musicFolder = defineModel({ type: {} as PropType<Folder>, required: true }
 const hasContent = computed(() => musicFolder.value.musics.length || musicFolder.value.folders.length);
 
 function startPlay(music: Music) {
-    playlist.setCurrentPlaying(music.path);
+    playlist.setCurrentPlaying(music);
 }
 
 </script>

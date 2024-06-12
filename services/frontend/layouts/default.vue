@@ -4,8 +4,13 @@
             <v-container>
                 <slot />
             </v-container>
-            <MusicPlayer />
+
         </v-main>
+        <v-footer app color="grey" height="44" center>
+            <v-row justify="center">
+                <MusicPlayer />
+            </v-row>
+        </v-footer>
     </v-app>
 </template>
 

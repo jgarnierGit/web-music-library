@@ -14,7 +14,8 @@ interface Music {
     path: string,
     name: string,
     album: string,
-    artist: string
+    artist: string,
+    count_played: number
 }
 
 export type { Folder, Music }

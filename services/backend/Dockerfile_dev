@@ -5,10 +5,13 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
+# Install GDAL
+RUN apt-get update && apt-get install -y binutils libproj-dev gdal-bin
+
 COPY ./requirements.txt /app/requirements.txt
-# COPY ./requirements_dev.txt /app/requirements_dev.txt
+COPY ./requirements_dev.txt /app/requirements_dev.txt
 
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
-# RUN pip install --no-cache-dir --upgrade -r /app/requirements_dev.txt
+RUN pip install --no-cache-dir --upgrade -r /app/requirements_dev.txt
 
 CMD ["./run_dev.sh"]
