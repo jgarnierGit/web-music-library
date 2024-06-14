@@ -1,20 +1,24 @@
 <template>
     <v-list-group v-if="hasContent" :subgroup="true" :value="musicFolder.name" :title="musicFolder.name">
-        <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" :title="musicFolder.name" />
+        <template v-slot:activator="{ props, isOpen }">
+            <v-list-item v-bind="props" :title="musicFolder.name" :prepend-icon="folderIcon(isOpen)" />
         </template>
-        <v-list-item v-for="(music, i) in musicFolder.musics" :title="music.name" @click="startPlay(music)" />
+        <v-list-item v-for="(music, i) in musicFolder.musics" :title="music.name" @click="startPlay(music)"
+            :prepend-icon="mdiFileMusicOutline" />
 
         <MusicTreeGroup v-for="(folder, i) in musicFolder.folders" v-model="musicFolder.folders[i]"
             :depth="depth + 1" />
     </v-list-group>
-    <v-list-item v-else :title="musicFolder.name" />
+    <v-list-item v-else :title="musicFolder.name" :prepend-icon="mdiFolder" />
 </template>
 
 <script setup lang="ts">
+import { mdiFileMusicOutline, mdiFolder, mdiFolderOpen } from '@mdi/js';
 import type { Folder, Music } from '~/commons/interfaces';
 import { usePlaylistStore } from '~/stores/playlist';
 const playlist = usePlaylistStore();
+
+const folderIcon = computed(() => (isOpen: boolean) => isOpen ? mdiFolderOpen : mdiFolder)
 
 withDefaults(defineProps<{ depth?: number }>(), {
     depth: 0

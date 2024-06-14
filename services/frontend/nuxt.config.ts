@@ -3,8 +3,10 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   build: {
-    transpile: ['vuetify'],
+    transpile: ['vuetify']
   },
+
+  ssr: false,
   modules: ['@pinia/nuxt', '@nuxt/test-utils/module',
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
@@ -19,6 +21,11 @@ export default defineNuxtConfig({
       template: {
         transformAssetUrls,
       },
-    },
+    }
+  },
+  nitro: {
+    experimental: {
+      wasm: true
+    }
   },
 })
