@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "filesystem.apps.FilesystemConfig",
+    "music.apps.MusicConfig",
     "rest_framework",
     "corsheaders",
     "django.contrib.gis",

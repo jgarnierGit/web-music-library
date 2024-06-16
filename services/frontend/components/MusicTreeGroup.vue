@@ -4,7 +4,8 @@
             <v-list-item v-bind="props" :title="musicFolder.name" :prepend-icon="folderIcon(isOpen)" />
         </template>
         <v-list-item v-for="(music, i) in musicFolder.musics" :title="music.name" @click="startPlay(music)"
-            :prepend-icon="mdiFileMusicOutline" />
+            :prepend-icon="musicIcon(music)" v-on:mouseover="musicHoveringId = music.id"
+            v-on:mouseleave="musicHoveringId = undefined" />
 
         <MusicTreeGroup v-for="(folder, i) in musicFolder.folders" v-model="musicFolder.folders[i]"
             :depth="depth + 1" />
@@ -13,12 +14,16 @@
 </template>
 
 <script setup lang="ts">
-import { mdiFileMusicOutline, mdiFolder, mdiFolderOpen } from '@mdi/js';
+import { mdiFileMusicOutline, mdiFolder, mdiFolderOpen, mdiPlay } from '@mdi/js';
 import type { Folder, Music } from '~/commons/interfaces';
 import { usePlaylistStore } from '~/stores/playlist';
 const playlist = usePlaylistStore();
 
+const musicHoveringId = ref<string>();
+
 const folderIcon = computed(() => (isOpen: boolean) => isOpen ? mdiFolderOpen : mdiFolder)
+
+const musicIcon = computed(() => (music: Music) => music.id === musicHoveringId.value ? mdiPlay : mdiFileMusicOutline)
 
 withDefaults(defineProps<{ depth?: number }>(), {
     depth: 0

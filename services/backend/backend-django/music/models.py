@@ -6,7 +6,8 @@ import hashlib
 import os
 from rest_framework import serializers
 
-SCHEMA = '"library"'
+from .model_countries_dump import Countries
+
 MUSIC_PATH_MAX_LENGTH = os.environ.get("MUSIC_PATH_MAX_LENGTH", 500)
 
 
@@ -18,9 +19,6 @@ class Genre(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.TextField()
 
-    class Meta:
-        db_table = f'{SCHEMA}."genre"'
-
     def __str__(self):
         return self.name
 
@@ -28,10 +26,11 @@ class Genre(models.Model):
 class Artist(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.TextField()
-    geom = models.PointField(srid=4326, null=True)
-
-    class Meta:
-        db_table = f'{SCHEMA}."artist"'
+    country_name = models.TextField(null=True)
+    geom = models.PointField(
+        srid=4326,
+        null=True,
+    )
 
     def __str__(self):
         return self.name
@@ -55,9 +54,6 @@ class Album(models.Model):
         related_name="FK_ALBUM_GENRE",
     )
     date = models.DateTimeField("date published", null=True)
-
-    class Meta:
-        db_table = f'{SCHEMA}."album"'
 
     def __str__(self):
         return self.name
@@ -88,9 +84,6 @@ class Music(models.Model):
     count_played = models.IntegerField(default=0)
     count_skipped = models.IntegerField(default=0)
     checksum = models.TextField(null=True)
-
-    class Meta:
-        db_table = f'{SCHEMA}."music"'
 
     def __str__(self):
         return self.name

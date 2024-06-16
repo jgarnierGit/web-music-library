@@ -5,7 +5,10 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify']
   },
-
+  alias: {
+    // itowns doesn't have a default export
+    'itowns': '~/node_modules/itowns/dist/itowns.js',
+  },
   ssr: false,
   modules: ['@pinia/nuxt', '@nuxt/test-utils/module',
     (_options, nuxt) => {

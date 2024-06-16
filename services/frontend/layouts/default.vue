@@ -1,11 +1,11 @@
 <template>
     <v-app class="app">
-        <v-main class="opacity-80">
+        <v-main>
             <v-container>
                 <slot />
             </v-container>
         </v-main>
-        <v-footer app color="grey" height="44" center class="opacity-80">
+        <v-footer app color="grey" height="44" center class="opacity-90">
             <v-row justify="center">
                 <v-col cols="4"></v-col>
                 <v-col cols="4">

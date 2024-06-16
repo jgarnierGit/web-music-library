@@ -18,4 +18,21 @@ interface Music {
     count_played: number
 }
 
-export type { Folder, Music }
+interface Artist {
+    id: string,
+    name: string,
+    country_name: string,
+    geom: string
+}
+
+interface ArtistList {
+    artists: Artist[]
+}
+
+interface ArtistMapEditorContext {
+    value: any;
+    artist: Artist,
+    callback: Function
+}
+
+export type { Folder, Music, Artist, ArtistList, ArtistMapEditorContext }

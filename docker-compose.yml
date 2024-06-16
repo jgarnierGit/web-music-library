@@ -21,9 +21,13 @@ services:
         read_only: true
       - ./services/backend:/app
       - ./data:/data
+    env_file:
+      - .env
+      - .env.dev
     environment:
       - GDAL_LIBRARY_PATH=/usr/lib/ogdi/4.1/libgdal.so
-      - MUSIC_PATH_MAX_LENGTH=${MUSIC_PATH_MAX_LENGTH}
+      - APP_VERSION=0.1
+      - APP_NAME=web-music-library
     depends_on:
       - db
       - nginx
@@ -38,7 +42,6 @@ services:
       - 54333:5432
     volumes:
       - ${PG_DATA}:/var/lib/postgresql/data
-      - ./services/migration_install.sql:/docker-entrypoint-initdb.d/migration_install.sql
 
   nginx:
     image: nginx:stable-alpine3.19-perl

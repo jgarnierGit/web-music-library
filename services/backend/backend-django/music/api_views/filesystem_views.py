@@ -1,9 +1,6 @@
 import os
 from django.http import JsonResponse
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from .models import Music, Artist, Album, MusicSerializer
+from ..models import Music, Artist, Album, MusicSerializer
 from uuid import uuid4
 
 MUSIC_PATH = "/music"
@@ -55,14 +52,3 @@ def updateDb(music_name: str, music_path: str, artist_name: str, album_name: str
         music.save()
     existing_music = Music.objects.filter(checksum=music.checksum).first()
     return existing_music
-
-
-class IncrementMusicPlayedView(APIView):
-    def post(self, request, item_id):
-        try:
-            music = Music.objects.get(id=item_id)
-            music.count_played += 1
-            music.save()
-        except Music.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        return JsonResponse(MusicSerializer(music).data)
