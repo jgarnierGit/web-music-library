@@ -1,10 +1,9 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from ..models import Music, Artist, MusicSerializer, ArtistSerializer, Countries
+from ..models import Music, Artist, MusicSerializer, ArtistSerializer
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
-import time
 
 
 class IncrementMusicPlayedView(APIView):
@@ -39,18 +38,6 @@ class ArtistUpdateView(APIView):
 
 @require_GET
 def artist_count(request):
-    time.sleep(1)
     count_artists = Artist.objects.count()
     print(count_artists)
     return JsonResponse({"result": count_artists})
-
-
-@require_GET
-def get_centroid_country(request, country_name):
-    try:
-        country = Countries.objects.get(name=country_name)
-        return JsonResponse(
-            {"result": country.geom.centroid.json, "srid": country.geom.srid}
-        )
-    except Music.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)

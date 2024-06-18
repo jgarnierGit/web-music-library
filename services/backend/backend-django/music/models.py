@@ -6,8 +6,6 @@ import hashlib
 import os
 from rest_framework import serializers
 
-from .model_countries_dump import Countries
-
 MUSIC_PATH_MAX_LENGTH = os.environ.get("MUSIC_PATH_MAX_LENGTH", 500)
 
 
@@ -18,6 +16,9 @@ class Migration(migrations.Migration):
 class Genre(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.TextField()
+    last_played = models.DateTimeField("last time played genre", null=True)
+    count_played = models.IntegerField(default=0)
+    count_skipped = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -31,6 +32,9 @@ class Artist(models.Model):
         srid=4326,
         null=True,
     )
+    last_played = models.DateTimeField("last time played artist", null=True)
+    count_played = models.IntegerField(default=0)
+    count_skipped = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -54,6 +58,9 @@ class Album(models.Model):
         related_name="FK_ALBUM_GENRE",
     )
     date = models.DateTimeField("date published", null=True)
+    last_played = models.DateTimeField("last time played album", null=True)
+    count_played = models.IntegerField(default=0)
+    count_skipped = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-toolbar>
+        <v-toolbar density="compact">
             <v-toolbar-title>Artists
                 <v-badge v-if="!countPending" :content="artistsCount.result" inline />
             </v-toolbar-title>

@@ -40,7 +40,7 @@ const audioPlayer = ref();
 const { currentPlaying } = storeToRefs(playlist);
 const { isVisible, isFocused } = storeToRefs(projectM);
 
-audioPath.value = `/demo.mp3`;
+audioPath.value = `/demo.mp3`; //TODO  mock file system
 
 const viewerIcon = computed(() => isVisible.value ? mdiMonitorOff : mdiMonitor)
 const viewerIconMode = computed(() => isFocused.value ? mdiFullscreenExit : mdiFullscreen)
@@ -53,7 +53,7 @@ watch(currentPlaying, async (newVal) => {
 
         enableAudio(audioPlayer.value, false);
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/music/${newVal.id}/increment/`);
+            const response = await axios.post(`/api/music/${newVal.id}/increment/`);
             console.log(response);
         } catch (err) {
             console.error(`maybe the server is stopped ${err}`)

@@ -21,9 +21,4 @@ urlpatterns = [
         views.ArtistUpdateView.as_view(),
         name="artist_update",
     ),
-    path(
-        "country/<str:country_name>/centroid",
-        views.get_centroid_country,
-        name="get_country_centroid",
-    ),
 ]

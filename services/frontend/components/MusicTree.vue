@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-toolbar title="File System" />
+        <v-toolbar title="File System" density="compact" />
         <v-container fluid>
             <v-list>
                 <MusicTreeGroup v-model="musicFolder" />

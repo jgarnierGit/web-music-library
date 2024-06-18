@@ -10,7 +10,7 @@ Frontend :
   - App : [Vue3](https://vuejs.org/), [Nuxt3](https://nuxt.com/), [Pinia](https://pinia.vuejs.org/)
   - Component Framework : [Vuetify3](https://vuetifyjs.com/)
   - Music Vizualiser : [projectM](https://github.com/projectM-visualizer/projectm) via [webAssembly](https://webassembly.org/)
-  - Geospatial Map : [Itowns](https://www.itowns-project.org/) and [Threejs](https://threejs.org/)
+  - Geospatial Map : [Leaflet](https://leafletjs.com/) with [Turf.js](https://turfjs.org/) and [shpjs](https://www.npmjs.com/package/shpjs)
 
 Backend : 
   - Server : [python3](https://www.python.org/), [Django](https://www.djangoproject.com/), [Nginx](https://nginx.org/)

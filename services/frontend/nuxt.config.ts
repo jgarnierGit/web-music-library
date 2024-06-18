@@ -6,8 +6,7 @@ export default defineNuxtConfig({
     transpile: ['vuetify']
   },
   alias: {
-    // itowns doesn't have a default export
-    'itowns': '~/node_modules/itowns/dist/itowns.js',
+    'turf': '~/node_modules/@turf/turf/dist/esm/index.js'
   },
   ssr: false,
   modules: ['@pinia/nuxt', '@nuxt/test-utils/module',
