@@ -6,19 +6,23 @@
                 Your browser does not support the audio element.
             </audio>
         </v-col>
-        <v-col>
-            <v-tooltip location="top" origin="auto" text="Change preset">
-                <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" :icon=mdiSwapHorizontal variant="text" @click="loadMilkdropPreset()" />
-                </template>
-            </v-tooltip>
+        <v-col style="vertical-align: middle">
             <v-tooltip location="top" origin="auto" text="Toggle Visualizer">
                 <template v-slot:activator="{ props }">
                     <v-btn v-bind="props" :icon="viewerIcon" variant="text" @click="toggleViewer()" />
                 </template>
             </v-tooltip>
+            <v-tooltip v-if="isVisible" location="top" origin="auto" text="Change preset">
+                <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" :icon=mdiSwapHorizontal variant="text" @click="loadMilkdropPreset()" />
+                </template>
+            </v-tooltip>
+            <v-tooltip v-if="isVisible" location="top" origin="auto" :text="focusTooltip">
+                <template v-slot:activator="{ props }">
+                    <v-btn v-bind="props" :icon="viewerIconMode" variant="text" @click="toggleViewerMode()" />
+                </template>
+            </v-tooltip>
         </v-col>
-        <v-spacer />
     </v-row>
 
 </template>
@@ -27,18 +31,20 @@ import { storeToRefs } from 'pinia';
 import { API_BASE_URL, AUDIO_BASE_URL } from '~/commons/constants';
 import { usePlaylistStore } from '~/stores/playlist';
 import axios from 'axios';
-import { mdiSwapHorizontal, mdiMonitorOff, mdiMonitor } from '@mdi/js';
+import { mdiSwapHorizontal, mdiMonitorOff, mdiMonitor, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 const projectM = useProjectMStore();
 
 const audioPath = ref<string>();
 const playlist = usePlaylistStore();
 const audioPlayer = ref();
 const { currentPlaying } = storeToRefs(playlist);
-const { isVisible } = storeToRefs(projectM);
+const { isVisible, isFocused } = storeToRefs(projectM);
 
 audioPath.value = `/demo.mp3`;
 
 const viewerIcon = computed(() => isVisible.value ? mdiMonitorOff : mdiMonitor)
+const viewerIconMode = computed(() => isFocused.value ? mdiFullscreenExit : mdiFullscreen)
+const focusTooltip = computed(() => isFocused.value ? "Background mode" : "Focus mode")
 
 onBeforeMount(() => console.log(AUDIO_BASE_URL));
 watch(currentPlaying, async (newVal) => {
@@ -59,7 +65,9 @@ watch(currentPlaying, async (newVal) => {
 function loadMilkdropPreset() {
     loadPreset();
 }
-
+function toggleViewerMode() {
+    projectM.toggleFocusMode();
+}
 function toggleViewer() {
     projectM.toggleMilkdrop();
 }

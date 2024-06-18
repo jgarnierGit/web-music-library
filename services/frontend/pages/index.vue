@@ -1,12 +1,21 @@
 <template>
-  <v-row class="background-opacity-90">
+  <v-row>
     <v-col>
-      <v-sheet rounded="lg">
-        <Artists v-model="mockArtists" />
-      </v-sheet>
-      <v-sheet rounded="lg">
-        <MusicTree v-model="library" class="overflow-y-auto" max-height="90vh" />
-      </v-sheet>
+      <v-row>
+        <v-col>
+          <v-sheet rounded="lg">
+            <MusicTree v-model="library" class="overflow-y-auto" max-height="80vh" />
+          </v-sheet>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
+          <v-sheet rounded="lg">
+            <Artists v-model="mockArtists" />
+          </v-sheet>
+        </v-col>
+      </v-row>
     </v-col>
     <v-col cols="8" class="opacity-100">
       <InteractiveMap />
@@ -30,8 +39,3 @@ const mockArtists = reactive({ "artists": [{ "id": "55a984eb-9306-4cdd-b5b2-c106
 
 const library = reactive(content);
 </script>
-<style>
-.background-opacity-90 {
-  background-color: rgba(238, 238, 238, 0.9)
-}
-</style>

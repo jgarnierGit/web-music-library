@@ -20,11 +20,14 @@ export default defineNuxtConfig({
     //...
   ],
   vite: {
+    define: {
+      VUE_APP_MOCK_SERVER: false
+    },
     vue: {
       template: {
         transformAssetUrls,
       },
-    }
+    },
   },
   nitro: {
     experimental: {

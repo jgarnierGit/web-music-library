@@ -15,9 +15,15 @@ urlpatterns = [
         name="get_artist_country",
     ),
     path("artist/list", views.ArtistsListView.as_view(), name="get_artists"),
+    path("artist/count", views.artist_count, name="get_count_artists"),
     path(
         "artist/<str:artist_id>",
         views.ArtistUpdateView.as_view(),
         name="artist_update",
+    ),
+    path(
+        "country/<str:country_name>/centroid",
+        views.get_centroid_country,
+        name="get_country_centroid",
     ),
 ]

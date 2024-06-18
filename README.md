@@ -70,6 +70,16 @@ edit .env example before first launch :
  - Wait for the db container log line `LOG:  database system is ready to accept connections`. It may take a while and you may see database stopping and restarting in the process.
  - Then run `docker compose restart backend`.
 
+## dev Notes
+
+front end dev, set this variable to disable API calls if you do not plan to work with the server launched
+
+```
+  vite: {
+    define: {
+      VUE_APP_MOCK_SERVER: true
+    },
+```
 
 # Thanks
 
