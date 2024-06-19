@@ -2,11 +2,17 @@
  * Filesystem description
  */
 interface Folder {
-    id: string,
     path: string,
     name: string,
     folders: Folder[],
-    musics: Music[]
+    musics: File[],
+    error: any,
+    opened: boolean
+}
+
+interface File {
+    error: any,
+    music: Music
 }
 
 interface Music {
@@ -35,4 +41,4 @@ interface ArtistMapEditorContext {
     callback: Function
 }
 
-export type { Folder, Music, Artist, ArtistList, ArtistMapEditorContext }
+export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext }

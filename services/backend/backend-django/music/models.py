@@ -20,6 +20,9 @@ class Genre(models.Model):
     count_played = models.IntegerField(default=0)
     count_skipped = models.IntegerField(default=0)
 
+    class Meta:
+        constraints = [models.UniqueConstraint("name", name="unique_name_genre")]
+
     def __str__(self):
         return self.name
 
@@ -35,6 +38,9 @@ class Artist(models.Model):
     last_played = models.DateTimeField("last time played artist", null=True)
     count_played = models.IntegerField(default=0)
     count_skipped = models.IntegerField(default=0)
+
+    class Meta:
+        constraints = [models.UniqueConstraint("name", name="unique_name_artist")]
 
     def __str__(self):
         return self.name
@@ -57,7 +63,7 @@ class Album(models.Model):
         null=True,
         related_name="FK_ALBUM_GENRE",
     )
-    date = models.DateTimeField("date published", null=True)
+    date = models.IntegerField("Publication year", null=True)
     last_played = models.DateTimeField("last time played album", null=True)
     count_played = models.IntegerField(default=0)
     count_skipped = models.IntegerField(default=0)
@@ -84,7 +90,7 @@ class Music(models.Model):
         blank=True,
         null=True,
     )
-    track = models.IntegerField(default=0)
+    track = models.TextField(null=True)
     duration = models.FloatField(default=0)
     bpm = models.IntegerField(null=True)
     last_played = models.DateTimeField("last time played song", null=True)
@@ -98,8 +104,8 @@ class Music(models.Model):
     def set_checksum(self):
         data = str(
             self.name
-            + str(self.artist if self.artist.name else "")
-            + str(self.album if self.album.name else "")
+            + str(self.artist.name if self.artist else "")
+            + str(self.album.name if self.album else "")
         )
         self.checksum = hashlib.sha256(data.encode()).hexdigest()
 
@@ -118,9 +124,9 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 class MusicSerializer(serializers.ModelSerializer):
 
-    artist = ArtistSerializer(allow_null=True)
-    album = AlbumSerializer(allow_null=True)
+    # artist = ArtistSerializer(allow_null=True)
+    # album = AlbumSerializer(allow_null=True)
 
     class Meta:
         model = Music
-        fields = "__all__"
+        fields = ["id", "name", "path"]

@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("music/list", views.get_tree_at, name="get_musics_filesystem"),
+    path("folder/list", views.FolderView.as_view(), name="get_folder_content"),
     path(
         "music/<str:item_id>/increment/",
         views.IncrementMusicPlayedView.as_view(),

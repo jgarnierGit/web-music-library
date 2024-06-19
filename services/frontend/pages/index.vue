@@ -4,7 +4,7 @@
       <v-row>
         <v-col>
           <v-sheet rounded="lg">
-            <MusicTree v-model="library" class="overflow-y-auto" max-height="80vh" />
+            <MusicTree />
           </v-sheet>
         </v-col>
       </v-row>
@@ -17,7 +17,7 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="8" class="opacity-100">
+    <v-col cols="4" class="opacity-100">
       <InteractiveMap />
     </v-col>
 
@@ -25,13 +25,8 @@
 </template>
 <script setup lang="ts">
 import { reactive } from 'vue';
-import type { Folder } from '~/commons/interfaces';
 import MusicTree from '~/components/MusicTree.vue';
 import Artists from '~/components/Artists.vue';
-
-
-
-const content: Folder = { id: '', name: '', folders: [], musics: [], path: '' };
 
 
 const mockArtists = reactive({
@@ -48,6 +43,4 @@ const mockArtists = reactive({
   ]
 });
 
-
-const library = reactive(content);
 </script>

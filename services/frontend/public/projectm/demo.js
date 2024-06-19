@@ -66,9 +66,9 @@ function loadModule() {
 function loadPreset() {
     if (!pmModule) return;
     //pmModule.loadPresetFile('presets/Martin - underwater cathedral.milk');  // RuntimeError
-    pmModule.loadPresetFile('presets/martin - cope - laser dome.milk');
+    //pmModule.loadPresetFile('presets/martin - cope - laser dome.milk');
     //pmModule.loadPresetFile('presets/martin - the forge of isengard.milk');
-    //pmModule.loadPresetFile('presets/martin - castle in the air.milk');
+    pmModule.loadPresetFile('presets/martin - castle in the air.milk');
 }
 
 function enableAudio(audio, enableLoop) {

@@ -8,14 +8,7 @@ const axiosInstance = axios.create({
     baseURL: isServerRunning ? API_BASE_URL : '',
 });
 
-if (!isServerRunning) {
-    console.error("Server is not connected, axios endpoints disabled, use this only for frontend development, and make sure to mock the API data you need")
-    mockAxios();
-}
-
-
-
-function mockAxios() {
+async function mockAxios() {
     var mock = new MockAdapter(axiosInstance);
     mock.onGet("/api/artist/count").reply(200, { result: "1000" });
     const pathRegex = new RegExp(`\/api\/music\/[\da-f-]{36}\/increment\/`);
@@ -24,6 +17,16 @@ function mockAxios() {
         count_played: 2
     } as Music;
     mock.onPost(pathRegex).reply(200, { result: "yes" }); // FIXME this one doesn't work.
+
+    const response = await fetch('./mocks/folder-list.json');
+    const listFolderResult = await response.json();
+
+    mock.onPost('/api/folder/list').reply(200, listFolderResult);
+}
+
+if (!isServerRunning) {
+    console.error("Server is not connected, axios endpoints disabled, use this only for frontend development, and make sure to mock the API data you need")
+    await mockAxios();
 }
 
 export default axiosInstance;

@@ -15,7 +15,7 @@
             <v-row dense>
                 <v-col v-for="artist in artistsList.artists" :key="artist.id">
                     <v-card max-width="150">
-                        <v-skeleton-loader type="image" boilerplate class="align-end">
+                        <v-skeleton-loader type="image" boilerplate>
                             <v-card-title class="text-gray" v-text="artist.name"></v-card-title>
                         </v-skeleton-loader>
                         <v-card-text>
@@ -92,7 +92,7 @@ async function countArtists() {
         const getRes = await axiosInstance.get(`/api/artist/count`);
         if (getRes.status !== 200) {
             console.error(getRes.data);
-            return "1";
+            return;
         }
         return getRes.data;
     } catch (err) {

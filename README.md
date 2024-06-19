@@ -4,6 +4,15 @@ Building my own web interface and enjoying my music while coding :)
 
 If you want a full featured webplayer based on Winamp experience, go check [webamp](https://github.com/captbaritone/webamp)
 
+## What it is
+
+- An Audio manager and player. Currently supporting MP3, OGG & WAV as I simply use <audio> html element. Sorry for all FLAC lovers.
+
+## What it is not
+
+- A music metadata editor. For that part, I recommand using [MP3Tag](https://www.mp3tag.de)
+  - Some functionalities adds metadata linked to your music, all saved in the embeded database. Your files are accessed on read-only.
+
 ## Overview
 
 Frontend : 
@@ -15,6 +24,8 @@ Frontend :
 Backend : 
   - Server : [python3](https://www.python.org/), [Django](https://www.djangoproject.com/), [Nginx](https://nginx.org/)
   - Database : [PostgreSQL](https://www.postgresql.org/), [PostGIS](https://postgis.net/)
+  - Geospatial : [GeoDjango](https://docs.djangoproject.com/fr/5.0/ref/contrib/gis/)
+  - Audio metadata : [mutagen](https://mutagen.readthedocs.io)
 
 ## Architecture Diagram
 
@@ -28,8 +39,6 @@ Backend :
  - ProjectM Milkdrop vizualisation
 
 Musics from your fileSystem are saved in the database on the first reach.
-
-For now, music files can be populated with [/filesystem/list](http://localhost:8000/filesystem/list) endpoint.
 
 A checksum is calculated based on music name, artist name and album name, to make the database resilient to filesystem changes.
 

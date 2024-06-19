@@ -1,0 +1,696 @@
+{
+    "id": "/music1",
+    "name": "music",
+    "path": "/music",
+    "folders": [
+        {
+            "id": "/music/Anime BO0",
+            "name": "Anime BO",
+            "path": "/music/Anime BO",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "ff897d88-f7c5-42a6-a024-afe2819d3557",
+                        "name": "opening01_fullversion.mp3",
+                        "path": "/music/Anime BO/opening01_fullversion.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                }
+            ]
+        },
+        {
+            "id": "/music/Chillout Abstract-Trip Hop NuJazz0",
+            "name": "Chillout Abstract-Trip Hop NuJazz",
+            "path": "/music/Chillout Abstract-Trip Hop NuJazz",
+            "folders": [],
+            "musics": []
+        },
+        {
+            "id": "/music/Classique0",
+            "name": "Classique",
+            "path": "/music/Classique",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "76ad0cf9-4068-4195-bcc6-d3c99c15095c",
+                        "name": "RIMSKI-KORSAKOV - Le vol du bourdon.mp3",
+                        "path": "/music/Classique/RIMSKI-KORSAKOV - Le vol du bourdon.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "ee0562d3-300a-4c1c-be09-3f0811dcff83",
+                        "name": "saint saens - danse macabre.mp3",
+                        "path": "/music/Classique/saint saens - danse macabre.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "1bf51b75-035c-4b32-9628-de50b9c84fb3",
+                        "name": "Symphonie espagnole en ré mineur pour violon et orchestre Op.21 I Allegro non troppo.mp3",
+                        "path": "/music/Classique/Symphonie espagnole en ré mineur pour violon et orchestre Op.21 I Allegro non troppo.mp3"
+                    },
+                    "error": "'APIC' object is not subscriptable"
+                }
+            ]
+        },
+        {
+            "id": "/music/Downtempo Ambient Psydub0",
+            "name": "Downtempo Ambient Psydub",
+            "path": "/music/Downtempo Ambient Psydub",
+            "folders": [],
+            "musics": []
+        },
+        {
+            "id": "/music/Jazz Afrobeat Fusion World0",
+            "name": "Jazz Afrobeat Fusion World",
+            "path": "/music/Jazz Afrobeat Fusion World",
+            "folders": [],
+            "musics": []
+        },
+        {
+            "id": "/music/Medtempo Trance Chillstep0",
+            "name": "Medtempo Trance Chillstep",
+            "path": "/music/Medtempo Trance Chillstep",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "8e2c835d-c2b3-4efc-b303-c49ab9f05dd5",
+                        "name": "Electrocado - Ahuacatl.mp3",
+                        "path": "/music/Medtempo Trance Chillstep/Electrocado - Ahuacatl.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                }
+            ]
+        },
+        {
+            "id": "/music/Pop-rock Progressive Folk Folk-Punk0",
+            "name": "Pop-rock Progressive Folk Folk-Punk",
+            "path": "/music/Pop-rock Progressive Folk Folk-Punk",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "ce2d3326-b7ea-4f17-9fa0-b330b1b06717",
+                        "name": "Depeche Mode - Enjoy The Silence.mp3",
+                        "path": "/music/Pop-rock Progressive Folk Folk-Punk/Depeche Mode - Enjoy The Silence.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "c5337a16-7bb8-459a-99d4-1b37f065a796",
+                        "name": "Jack Johnson - Good people.mp3",
+                        "path": "/music/Pop-rock Progressive Folk Folk-Punk/Jack Johnson - Good people.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "cd226a0a-7930-493a-b487-eb49248e92e0",
+                        "name": "Jack Johnson - Upside Down.mp3",
+                        "path": "/music/Pop-rock Progressive Folk Folk-Punk/Jack Johnson - Upside Down.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "ce82db28-41dd-458a-b767-86a41bc7ec4c",
+                        "name": "Midnight oil - Beds Are Burning.mp3",
+                        "path": "/music/Pop-rock Progressive Folk Folk-Punk/Midnight oil - Beds Are Burning.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "e88bbf2d-6062-4a3c-8490-b1460970c193",
+                        "name": "Moon Martin - Bad news.mp3",
+                        "path": "/music/Pop-rock Progressive Folk Folk-Punk/Moon Martin - Bad news.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "bff155ec-62ca-4c6e-9e8b-b517e109e2c4",
+                        "name": "tanger - la fee de la foret.mp3",
+                        "path": "/music/Pop-rock Progressive Folk Folk-Punk/tanger - la fee de la foret.mp3"
+                    }
+                },
+                {
+                    "music": {
+                        "id": "5c95fc57-de10-4d77-9698-cc757ccbd163",
+                        "name": "The Who - Who Are You.mp3",
+                        "path": "/music/Pop-rock Progressive Folk Folk-Punk/The Who - Who Are You.mp3"
+                    },
+                    "error": "'APIC' object is not subscriptable"
+                }
+            ]
+        },
+        {
+            "id": "/music/Post-rock metal Math-Rock Grunge0",
+            "name": "Post-rock metal Math-Rock Grunge",
+            "path": "/music/Post-rock metal Math-Rock Grunge",
+            "folders": [],
+            "musics": []
+        },
+        {
+            "id": "/music/Psy Goa Tribecore Raggatek0",
+            "name": "Psy Goa Tribecore Raggatek",
+            "path": "/music/Psy Goa Tribecore Raggatek",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "2f4c5e00-900b-45de-9c6c-4cc8a315481a",
+                        "name": "TakaTuka & GehLekTek - Shiko.mp3",
+                        "path": "/music/Psy Goa Tribecore Raggatek/TakaTuka & GehLekTek - Shiko.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                }
+            ]
+        },
+        {
+            "id": "/music/Punk Celtic0",
+            "name": "Punk Celtic",
+            "path": "/music/Punk Celtic",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "58764db0-6885-4842-b33d-c8761f4ef9da",
+                        "name": "Hanover Saints - masquerade.mp3",
+                        "path": "/music/Punk Celtic/Hanover Saints - masquerade.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "085d4746-0d50-480c-9c47-d2b5b6c884a2",
+                        "name": "jetsex - invisible minority.mp3",
+                        "path": "/music/Punk Celtic/jetsex - invisible minority.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                }
+            ]
+        },
+        {
+            "id": "/music/Punk-Rock Metal Hard-Rock0",
+            "name": "Punk-Rock Metal Hard-Rock",
+            "path": "/music/Punk-Rock Metal Hard-Rock",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "c87f5a3f-200b-46c2-ae3c-e7c7b98c9d96",
+                        "name": "el presidente-Without You.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/el presidente-Without You.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "95179087-89a9-46e7-98a6-ed7efd7a80af",
+                        "name": "Fake It.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Fake It.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "80141da4-a21f-4916-8fc3-a256d4818154",
+                        "name": "Fall Out Boy - Dance Dance.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Fall Out Boy - Dance Dance.mp3"
+                    }
+                },
+                {
+                    "music": {
+                        "id": "aaac800c-a517-48eb-b126-00d5145b9677",
+                        "name": "hellogoodbye - here (in your arms).mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/hellogoodbye - here (in your arms).mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "aa6c51ea-d081-44e8-a010-bfe2141cccc2",
+                        "name": "Hush Puppies - You're gonna say yeah.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Hush Puppies - You're gonna say yeah.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "717fa15c-f83d-4a65-9f09-aad11235dc7e",
+                        "name": "Jamiroquai - Deeper Underground.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Jamiroquai - Deeper Underground.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "be60fd71-f459-4c27-b764-61d1f63003a6",
+                        "name": "Joan Jett & the Blackhearts - I Love Rock And Roll.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Joan Jett & the Blackhearts - I Love Rock And Roll.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "b0d78f36-4e07-44f0-ae69-a07928dfe66f",
+                        "name": "Kaiser Chiefs - Ruby.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Kaiser Chiefs - Ruby.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "eecf4c7b-edf7-4926-be85-89ddc237afcb",
+                        "name": "Kiss - I Was Made For Loving You (Pub Coca Cola 2005).mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Kiss - I Was Made For Loving You (Pub Coca Cola 2005).mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "abfe9bb0-e825-4d35-807e-8a7d1934affc",
+                        "name": "Megadeth - Trust.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Megadeth - Trust.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "216f25ba-af59-4b3c-95fb-ab9f1df1d002",
+                        "name": "No Doubt - Don't Speak.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/No Doubt - Don't Speak.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "c6875b52-f72f-450f-8a1f-8be35fe04a6c",
+                        "name": "Oasis - Wonderwall.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/Oasis - Wonderwall.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "fa402f4a-2f3b-4120-840d-5cd0ca480c3b",
+                        "name": "RamJam - Black Betty.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/RamJam - Black Betty.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "100b6af8-832e-4c90-a50c-73744eaf9747",
+                        "name": "the automatic - monster.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/the automatic - monster.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "1813bb9b-74f8-4c2f-9715-be9fd9e5a488",
+                        "name": "The Rasmus-In the shadow.mp3",
+                        "path": "/music/Punk-Rock Metal Hard-Rock/The Rasmus-In the shadow.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                }
+            ]
+        },
+        {
+            "id": "/music/Rap Hip hop0",
+            "name": "Rap Hip hop",
+            "path": "/music/Rap Hip hop",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "20dfc16f-ee4a-4ecd-b52c-7a468ace38ff",
+                        "name": "Freestyler.mp3",
+                        "path": "/music/Rap Hip hop/Freestyler.mp3"
+                    },
+                    "error": "'APIC' object is not subscriptable"
+                }
+            ]
+        },
+        {
+            "id": "/music/Ska Reggae Dub0",
+            "name": "Ska Reggae Dub",
+            "path": "/music/Ska Reggae Dub",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "422566ac-eb40-43ed-ace7-3c5294c08f61",
+                        "name": "Gadjo loco - the house of the rising sun.mp3",
+                        "path": "/music/Ska Reggae Dub/Gadjo loco - the house of the rising sun.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "d6afb1c5-564f-43d9-83cc-ec244285136f",
+                        "name": "Pomme De Terre.mp3",
+                        "path": "/music/Ska Reggae Dub/Pomme De Terre.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                }
+            ]
+        },
+        {
+            "id": "/music/Techno Trance House0",
+            "name": "Techno Trance House",
+            "path": "/music/Techno Trance House",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "5b188be6-a9d0-4322-811b-2cd86b8d6eb4",
+                        "name": "Chemical Brothers - Star Guitar.mp3",
+                        "path": "/music/Techno Trance House/Chemical Brothers - Star Guitar.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "eeabb3be-387a-40ef-b939-e7696f02595e",
+                        "name": "Gabber Mafia - Gabber Mafia.mp3",
+                        "path": "/music/Techno Trance House/Gabber Mafia - Gabber Mafia.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "891dcfde-9004-4ec5-9464-5b00308241ea",
+                        "name": "Sandstorm - Darude.mp3",
+                        "path": "/music/Techno Trance House/Sandstorm - Darude.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "0ec55d0e-3102-4e87-a6c8-1343fb68a054",
+                        "name": "Vladgorythm suicide.mp3",
+                        "path": "/music/Techno Trance House/Vladgorythm suicide.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                }
+            ]
+        },
+        {
+            "id": "/music/Variete francaise0",
+            "name": "Variete francaise",
+            "path": "/music/Variete francaise",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "e1e64a4d-d8f3-41c6-88c8-d06d2df969f5",
+                        "name": "01-MALOH _ C'EST GRAVE DOCTEUR _.mp3",
+                        "path": "/music/Variete francaise/01-MALOH _ C'EST GRAVE DOCTEUR _.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "f8d21e8b-379f-4e3a-9f73-9db79e153dd0",
+                        "name": "06-MALOH _ DRAPS DESSUS DRAPS DESSOUS.mp3",
+                        "path": "/music/Variete francaise/06-MALOH _ DRAPS DESSUS DRAPS DESSOUS.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "12f78537-0775-4fe3-bfb4-46c16101da3c",
+                        "name": "Calogero - En apesenteur.mp3",
+                        "path": "/music/Variete francaise/Calogero - En apesenteur.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "402fc2d7-bc03-4f6e-9ec2-c9cbc85c9bd9",
+                        "name": "le banquet.mp3",
+                        "path": "/music/Variete francaise/le banquet.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "2631d782-e991-42ec-a687-64c0cf9fd238",
+                        "name": "Steve Waring - le matou revient.mp3",
+                        "path": "/music/Variete francaise/Steve Waring - le matou revient.mp3"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "/music/Zautres0",
+            "name": "Zautres",
+            "path": "/music/Zautres",
+            "folders": [],
+            "musics": [
+                {
+                    "music": {
+                        "id": "022e0911-e055-49b1-9efa-0c0ab4c5d9b4",
+                        "name": "15-D-.mp3",
+                        "path": "/music/Zautres/15-D-.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "8306a455-8eb2-4a88-b49c-66700ff3d04a",
+                        "name": "99luftballons.mp3",
+                        "path": "/music/Zautres/99luftballons.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "da045ec7-b911-4403-8586-3a0c0ac86360",
+                        "name": "Andreas Johnson - Glorious.mp3",
+                        "path": "/music/Zautres/Andreas Johnson - Glorious.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "713397fc-56bb-4e26-9240-fc439470cf3d",
+                        "name": "Beatles - John Lennon - Imagine.mp3",
+                        "path": "/music/Zautres/Beatles - John Lennon - Imagine.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "d136931b-a51a-443e-a8bf-ff66480bdd28",
+                        "name": "Cardigans - My Favorite Game.mp3",
+                        "path": "/music/Zautres/Cardigans - My Favorite Game.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "01d4d778-3a90-4d21-ae97-9e57e69a3634",
+                        "name": "Corona - Rythm Of The Night.mp3",
+                        "path": "/music/Zautres/Corona - Rythm Of The Night.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "4280981b-7a58-473b-b261-cace63e3a170",
+                        "name": "Daniel Balavoine - La ziza.mp3",
+                        "path": "/music/Zautres/Daniel Balavoine - La ziza.mp3"
+                    }
+                },
+                {
+                    "music": {
+                        "id": "a3bbb226-6e26-43e8-a038-e363fe908c43",
+                        "name": "DJ JIM - Electro Speed XIII.mp3",
+                        "path": "/music/Zautres/DJ JIM - Electro Speed XIII.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "fadad2e5-6ebf-47e2-ab5a-1eecce3dd487",
+                        "name": "eurythmics - sweet dreams.mp3",
+                        "path": "/music/Zautres/eurythmics - sweet dreams.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "22bc93dd-c4ff-4687-a136-f9629cff6b5e",
+                        "name": "hoosiers - worried about ray.mp3",
+                        "path": "/music/Zautres/hoosiers - worried about ray.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "a73fc18a-f67e-47f3-8c91-8247ec71c18b",
+                        "name": "jehro - i want love.mp3",
+                        "path": "/music/Zautres/jehro - i want love.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "4372a59a-8a03-49f2-9e95-1285374f3853",
+                        "name": "jen reve encore.mp3",
+                        "path": "/music/Zautres/jen reve encore.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "5996f552-45fc-4527-924e-3b783d86bd43",
+                        "name": "Joe Dassin - L ete Indien.mp3",
+                        "path": "/music/Zautres/Joe Dassin - L ete Indien.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "8999d3de-0497-4dad-b8f3-95f9752e8d26",
+                        "name": "John Powell - Assassin's Tango.mp3",
+                        "path": "/music/Zautres/John Powell - Assassin's Tango.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "d3e66cd9-0ea6-44fe-aa1d-0201156ddb77",
+                        "name": "la dance des sabres.mp3",
+                        "path": "/music/Zautres/la dance des sabres.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "e2fb8d89-fcb6-43a1-a274-4a22acb55b3a",
+                        "name": "Lipps Inc - Funky Town.mp3",
+                        "path": "/music/Zautres/Lipps Inc - Funky Town.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "cbcf2162-7bda-4bef-9af0-c51edf8f5464",
+                        "name": "My generation.mp3",
+                        "path": "/music/Zautres/My generation.mp3"
+                    },
+                    "error": "'APIC' object is not subscriptable"
+                },
+                {
+                    "music": {
+                        "id": "20a6d1f7-e02e-473a-b322-7384a9dc2161",
+                        "name": "Plastic Bertrand - Ca plane pour moi.mp3",
+                        "path": "/music/Zautres/Plastic Bertrand - Ca plane pour moi.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "4345bdb4-e07f-4fc9-b579-e8f6bab7d361",
+                        "name": "Rayman 3.mp3",
+                        "path": "/music/Zautres/Rayman 3.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "ff0a52bc-4bfc-48c4-ac30-ae2b7a5d2933",
+                        "name": "Richard Wagner - La Chevauchee des Walkyries.mp3",
+                        "path": "/music/Zautres/Richard Wagner - La Chevauchee des Walkyries.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "7b53224b-ff20-40d9-b9b1-90e601535871",
+                        "name": "Robbie William Kylie Minoque - Kids.mp3",
+                        "path": "/music/Zautres/Robbie William Kylie Minoque - Kids.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "18d2e426-d8c3-4ab5-af43-59ec1cea233c",
+                        "name": "Simple Plan - Welcome to My Life.mp3",
+                        "path": "/music/Zautres/Simple Plan - Welcome to My Life.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "ec288717-6d6d-4ac8-8018-10dd6eb03e83",
+                        "name": "Superbus - Butterfly.mp3",
+                        "path": "/music/Zautres/Superbus - Butterfly.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "d3074555-1051-4339-9179-d515b86ea7b2",
+                        "name": "Superbus_Pop'n gum.mp3",
+                        "path": "/music/Zautres/Superbus_Pop'n gum.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "f5862cc8-409c-4538-8223-df45cfacf7f3",
+                        "name": "sweet home alabama.mp3",
+                        "path": "/music/Zautres/sweet home alabama.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "ea45b8ea-e513-4498-bfab-a5e007fc8bc5",
+                        "name": "The Verve - Bittersweet Symphony.mp3",
+                        "path": "/music/Zautres/The Verve - Bittersweet Symphony.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "bef1d29f-ca3a-4bec-84bf-07fa1311a105",
+                        "name": "Track No01.mp3",
+                        "path": "/music/Zautres/Track No01.mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                },
+                {
+                    "music": {
+                        "id": "5b02a998-a308-4179-991a-3f9ed2edcb22",
+                        "name": "Video Killed the Radio Star.mp3",
+                        "path": "/music/Zautres/Video Killed the Radio Star.mp3"
+                    },
+                    "error": "fromisoformat: argument must be str"
+                },
+                {
+                    "music": {
+                        "id": "d2b85c0a-8002-486e-a3c0-60b6d4b0bf10",
+                        "name": "Village People - YMCA (Disco Oldies).mp3",
+                        "path": "/music/Zautres/Village People - YMCA (Disco Oldies).mp3"
+                    },
+                    "error": "'NoneType' object has no attribute 'name'"
+                }
+            ]
+        }
+    ],
+    "musics": []
+}
