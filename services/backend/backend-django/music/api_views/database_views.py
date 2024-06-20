@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from ..models import Music, Artist, MusicSerializer, ArtistSerializer
+from django.contrib.gis.geos import GEOSGeometry
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
 
@@ -19,7 +20,24 @@ class IncrementMusicPlayedView(APIView):
 
 class ArtistsListView(APIView):
     def get(self, request):
-        artists = Artist.objects.all()
+        limit = request.query_params.get("limit", 10)
+        if limit:
+            try:
+                limit = int(limit)
+            except ValueError:
+                return Response(
+                    {"error": "Invalid limit value"}, status=status.HTTP_400_BAD_REQUEST
+                )
+        offset = request.query_params.get("offset", 0)
+        if offset:
+            try:
+                offset = int(offset)
+            except ValueError:
+                return Response(
+                    {"error": "Invalid offset value"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        artists = Artist.objects.all()[offset:limit]
         return JsonResponse(
             {"artists": [ArtistSerializer(artist).data for artist in artists]}
         )
@@ -28,7 +46,11 @@ class ArtistsListView(APIView):
 class ArtistUpdateView(APIView):
     def put(self, request, artist_id):
         artist = Artist.objects.get(id=artist_id)
-        serializer = ArtistSerializer(artist, data=request.data)
+        artist_data = request.data
+        if artist_data["geom"]:
+            artist.geom = GEOSGeometry(str(artist_data["geom"]))
+            del artist_data["geom"]
+        serializer = ArtistSerializer(artist, data=artist_data)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_204_NO_CONTENT)

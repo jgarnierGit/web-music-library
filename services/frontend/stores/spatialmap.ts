@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
-import type { ArtistMapEditorContext } from "~/commons/interfaces";
+import type { ArtistMapEditorContext, GeomData } from "~/commons/interfaces";
 
 export const useSpatialMapStore = defineStore('spatialMap', () => {
     const editionId = ref<string>();
     const editorContext = ref<ArtistMapEditorContext>();
+
+    const geomLayerData = ref<GeomData[]>()
 
     function openEditionForId(id: string, context: ArtistMapEditorContext) {
         editionId.value = id;
@@ -18,6 +20,10 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         editionId.value = undefined;
     }
 
+    function addLayer(data: GeomData[]) {
+        geomLayerData.value = data;
+    }
 
-    return { editionId, editorContext, openEditionForId, closeEditionId };
+
+    return { editionId, editorContext, geomLayerData, openEditionForId, closeEditionId, addLayer };
 });

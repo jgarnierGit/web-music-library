@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 });
 
 async function mockAxios() {
-    var mock = new MockAdapter(axiosInstance);
+    var mock = new MockAdapter(axiosInstance, { delayResponse: 500 });
     mock.onGet("/api/artist/count").reply(200, { result: "1000" });
     const pathRegex = new RegExp(`\/api\/music\/[\da-f-]{36}\/increment\/`);
     const musicRes = {
@@ -22,6 +22,13 @@ async function mockAxios() {
     const listFolderResult = await response.json();
 
     mock.onPost('/api/folder/list').reply(200, listFolderResult);
+
+    const responseArtists = await fetch('./mocks/artist-list.json');
+    const listArtistsResult = await responseArtists.json();
+
+    mock.onGet('/api/artist/list').reply(200, listArtistsResult);
+    const pathListArtistRegex = new RegExp(`api/artist\/list\?offset\=[0-9]+`);// FIXME this one doesn't work.
+    mock.onGet(pathListArtistRegex).reply(200, { artists: [] })
 }
 
 if (!isServerRunning) {

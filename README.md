@@ -1,8 +1,12 @@
 # Music Library player
 
-Building my own web interface and enjoying my music while coding :)
+![Thumbnail Image](./doc/geoviewer.jpg)
 
-If you want a full featured webplayer based on Winamp experience, go check [webamp](https://github.com/captbaritone/webamp)
+Have you ever wonder of playing your music located in France ? or Canada ?
+
+Just pick a country and let the music play !
+
+(Also edit your music library to add geolocalisation link ;) )
 
 ## What it is
 

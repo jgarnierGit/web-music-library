@@ -1,0 +1,340 @@
+{
+    "artists": [
+        {
+            "id": "d23d09ac-578d-4398-abb3-cf3029ca657f",
+            "name": "Earnestine Espinoza",
+            "country_name": "France",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    46.60646331103216,
+                    2.339088734646377
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "7c551693-f08b-4cd5-b77c-a85630f07933",
+            "name": "Nanette Neal",
+            "country_name": "France",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    46.60646331103216,
+                    2.339088734646377
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "42af77bc-c8cb-4288-b68d-bcba0188f311",
+            "name": "Dollie Sampson",
+            "country_name": "Germany",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    51.1337227112588,
+                    10.288485064046567
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "952bc6d9-6e31-4a31-8640-2462533eb1bc",
+            "name": "Deena Mueller",
+            "country_name": "Germany",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    51.1337227112588,
+                    10.288485064046567
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "46adbd9f-1e4f-4636-a9b5-e477d43c7096",
+            "name": "Spencer Whitehead",
+            "country_name": "France",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    46.60646331103216,
+                    2.339088734646377
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "cc8f0afa-0f38-4b9c-b783-f44ea6d8e8e4",
+            "name": "Sonja Riley",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "6bd552a8-adef-4e80-9ced-1ff7b5f71be4",
+            "name": "Morse Elliott",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "a7d37da0-97ee-4d43-9d21-05279615b06f",
+            "name": "Janet Morse",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "f3f41abb-f896-468b-8f87-ffdb2993ee75",
+            "name": "Rosario Farmer",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "f730a72a-ff7f-4fb0-b092-665de9596a9e",
+            "name": "Livingston Nguyen",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "80549562-fa03-4594-b511-57273b74920f",
+            "name": "Houston Sheppard",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "0f7f5845-3b31-460a-bb32-70b2dfefcb26",
+            "name": "Ellis Jordan",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "2c6ebd71-bd22-46fc-9068-11480558cbb2",
+            "name": "Joseph Dale",
+            "country_name": "Ireland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    53.18059108949045,
+                    -8.01023680654156
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "2d15e9a7-fc11-4636-9fac-57a2997cdc72",
+            "name": "Sherman Buckner",
+            "country_name": "Morocco",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    29.8853944562034,
+                    -8.42047971881785
+                ]
+            },
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "7dd1a677-0096-47ac-a7c4-30fee4e4a6eb",
+            "name": "Glenn Kennedy",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "fdb52adb-7029-49ab-bd84-42e2479983fe",
+            "name": "Kristi Rutledge",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "9d129a57-2eec-4572-8d33-a6121968fe34",
+            "name": "Lilian Thompson",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "f187272a-2d04-4343-b868-e6910081615b",
+            "name": "Pauline Kinney",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "78175a5c-05d8-4388-9e2d-b84cba8890cd",
+            "name": "Lana Stein",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "31cc2411-d74f-42b1-af10-079369cdc822",
+            "name": "Reynolds Walter",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "ee5f2ecf-fed3-4e68-baa0-956def9b9bf0",
+            "name": "Millicent Richards",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "e7959d88-b8cb-48e6-84fa-d610e8a0bb58",
+            "name": "Rosa Goff",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "abad9a36-0fab-4ce1-8669-ce03983f2c36",
+            "name": "Alisa Reynolds",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "32fbdac6-c20f-4f00-be49-d959e9d41933",
+            "name": "Sheila Albert",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "e5a48e5f-405e-4823-8621-1c2d92087cb1",
+            "name": "Lambert Keith",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "fc6fa2bd-2b43-4656-96cb-908e63dd07f6",
+            "name": "Randolph Gentry",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "fa40adfd-fa3b-47dd-8c26-6c696db5ba6a",
+            "name": "Nunez Roach",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        },
+        {
+            "id": "15c7e869-4953-4b55-824c-d2487897d475",
+            "name": "Mcfarland Matthews",
+            "country_name": null,
+            "geom": null,
+            "last_played": null,
+            "count_played": 0,
+            "count_skipped": 0
+        }
+    ]
+}

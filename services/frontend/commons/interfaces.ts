@@ -24,11 +24,14 @@ interface Music {
     count_played: number
 }
 
-interface Artist {
-    id: string,
+interface GeomData {
     name: string,
+    geom: any
+}
+
+interface Artist extends GeomData {
+    id: string,
     country_name: string,
-    geom: string
 }
 
 interface ArtistList {
@@ -41,4 +44,4 @@ interface ArtistMapEditorContext {
     callback: Function
 }
 
-export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext }
+export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext, GeomData }

@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   alias: {
     'turf': '~/node_modules/@turf/turf/dist/esm/index.js'
   },
+  css: ['~/node_modules/leaflet.markercluster/dist/MarkerCluster.css', 'leaflet.markercluster/dist/MarkerCluster.Default.css'],
   ssr: false,
   modules: ['@pinia/nuxt', '@nuxt/test-utils/module',
     (_options, nuxt) => {

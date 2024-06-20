@@ -8,7 +8,7 @@
                 <v-divider color="error"></v-divider>
                 Server log: "{{ folder.error }}"
             </v-alert>
-            <v-list v-else height="55vh">
+            <v-list v-else height="40vh">
                 <MusicTreeGroup v-model:node="folder" />
             </v-list>
         </v-container>

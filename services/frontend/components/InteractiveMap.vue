@@ -15,19 +15,37 @@ import 'leaflet/dist/leaflet.css';
 import shp from 'shpjs';
 import * as turf from '@turf/turf';
 import { onMounted, ref } from 'vue'
-import L from 'leaflet'
+import L from 'leaflet';
+import "leaflet.markercluster";
 import { FRONT_PUBLIC_URL } from '~/commons/constants';
+import type { GeomData } from '~/commons/interfaces';
 
 const countriesLayerBuffers = await useAsyncData('countries', () => loadCountries());
 const countriesLayer = ref();
 const mapStore = useSpatialMapStore();
-const { editionId, editorContext } = storeToRefs(mapStore);
+const { editionId, editorContext, geomLayerData } = storeToRefs(mapStore);
 
 const marker = ref();
-const leafletMap = ref<L.Map>()
+// avoid zoom side effect on leaftlet map events (un)binding one could have using regular ref()
+const leafletMap = shallowRef<L.Map>()
+
+
+watch(geomLayerData, (newVal) => {
+    if (newVal && newVal.length > 0) {
+        var markers = L.markerClusterGroup();
+        const markersList = newVal.map((geoData: GeomData) => L.marker([geoData.geom.coordinates[0], geoData.geom.coordinates[1]]))
+        markers.addLayers(markersList);
+        if (!leafletMap.value) {
+            console.log("Map is not initiated, couldn't add markers");
+            return;
+        }
+        leafletMap.value.addLayer(markers);
+    }
+})
 
 onMounted(() => {
     initLeafletMap();
+    L.Icon.Default.prototype.options.className = "mapMarker";
 })
 
 function initLeafletMap() {
@@ -115,13 +133,15 @@ async function pickCountry(event: any) {
             subPolygon.getBounds().contains(clickCoordInvert)
         );
     const centroid = turf.centerOfMass(pickedPolygon.toGeoJSON()); // pickedPolygon.getCenter() requires polygon to be loaded on the map
-    const centroidLatLong = new L.LatLng(centroid.geometry.coordinates[0], centroid.geometry.coordinates[1]);
     const countryName = event.target.feature.properties["NAME"];
+    const centroidLatLong = new L.LatLng(centroid.geometry.coordinates[0], centroid.geometry.coordinates[1]);
     if (!marker.value) {
         marker.value = L.marker(centroidLatLong, { title: countryName });// TODO try autoPanOnFocus : true, bubblingMouseEvents: true
         // lets customize default icon.
-        L.Icon.Default.prototype.options.className = "mapMarker";
+
         marker.value.addTo(leafletMap.value)
+        // .bindPopup(countryName)
+        // .openPopup();
         marker.value.on({
             // hilight feature to disambiguate marker parenting
             mouseover: markerMouseOver,
@@ -133,7 +153,7 @@ async function pickCountry(event: any) {
     }
     marker.value.feature = event.target.feature;
 
-    editorContext.value?.callback(countryName);
+    editorContext.value?.callback({ countryName: countryName, geom: centroid.geometry });
 }
 
 function markerMouseOver() {

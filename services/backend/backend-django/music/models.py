@@ -4,6 +4,7 @@ from django.db import migrations
 from django.contrib.postgres.operations import CreateExtension
 import hashlib
 import os
+import json
 from rest_framework import serializers
 
 MUSIC_PATH_MAX_LENGTH = os.environ.get("MUSIC_PATH_MAX_LENGTH", 500)
@@ -114,6 +115,18 @@ class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         fields = "__all__"
+
+    # overwrite geom serialization
+    def to_representation(self, instance):
+        data = {**instance.__dict__}
+        # Remove the _state field from the data dictionary
+        del data["_state"]
+        # Serialize the geom field as a GeoJSON object
+        if instance.geom:
+            geom_dict = json.loads(instance.geom.geojson)
+            data["geom"] = geom_dict
+
+        return data
 
 
 class AlbumSerializer(serializers.ModelSerializer):
