@@ -24,6 +24,30 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         geomLayerData.value = data;
     }
 
+    function updateLayerData(data: GeomData[]) {
+        if (!geomLayerData.value) {
+            geomLayerData.value = data;
+            return;
+        }
+        const valuesToPush: GeomData[] = [];
+        data.forEach((geomData: GeomData) => {
+            //@ts-ignore
+            const existingData = geomLayerData.value.find((g) => g.id === geomData.id);
+            if (existingData) {
+                existingData.geom = geomData.geom;
+            }
+            else {
+                valuesToPush.push(geomData);
+            }
+        })
 
-    return { editionId, editorContext, geomLayerData, openEditionForId, closeEditionId, addLayer };
+
+        if (valuesToPush.length > 0) {
+            const newArray = geomLayerData.value.concat(valuesToPush)
+            geomLayerData.value = newArray;
+        }
+    }
+
+
+    return { editionId, editorContext, geomLayerData, openEditionForId, closeEditionId, addLayer, updateLayerData };
 });

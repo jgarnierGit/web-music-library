@@ -25,12 +25,16 @@ interface Music {
 }
 
 interface GeomData {
+    id: string,
     name: string,
-    geom: any
+    geom: any,
+    feature_name: string
 }
 
-interface Artist extends GeomData {
+interface Artist {
     id: string,
+    name: string,
+    geom: any,
     country_name: string,
 }
 

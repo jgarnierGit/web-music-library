@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { mdiContentSaveEdit, mdiContentSaveOff, mdiMapMarker } from '@mdi/js';
 import axiosInstance from '~/axiosInstance';
-import type { Artist, ArtistMapEditorContext } from '~/commons/interfaces';
+import type { Artist, ArtistMapEditorContext, GeomData } from '~/commons/interfaces';
 
 const mapStore = useSpatialMapStore();
 const { editionId } = storeToRefs(mapStore);
@@ -67,15 +67,23 @@ const { pending: dataPending, data: artistsData } = await useLazyAsyncData('arti
 const mapEditionIcon = computed(() => (id: string) => editionId.value === id ? mdiContentSaveEdit : mdiMapMarker);
 const tooltipMapEditor = computed(() => (id: string) => editionId.value === id ? "Save edition" : "Edit artist location")
 
+function createGeomData(artists: Artist[]) {
+    return artists.map((artist: Artist) => {
+        return { id: artist.id, name: artist.country_name, geom: artist.geom, feature_name: artist.name } as GeomData;
+    })
+}
+
 async function switchEdition(artist: Artist) {
     if (editionId.value === artist.id) {
         mapStore.closeEditionId(artist.id);
         await axiosInstance.put(`/api/artist/${artist.id}`, artist);
+        mapStore.updateLayerData(createGeomData([artist]));
         // TODO reintroduce the snacbar
     }
     else {
         const editionContext = {} as ArtistMapEditorContext;
         editionContext.artist = artist;
+        //TODO can be better typed using geomData
         editionContext.callback = (payload: { countryName: string, geom: any }) => {
             editionContext.artist.country_name = payload.countryName;
             editionContext.artist.geom = payload.geom;
@@ -90,7 +98,7 @@ function cancelEdition(id: string) {
 
 async function loadArtists() {
     const res = await getAPI(`/api/artist/list`);
-    mapStore.addLayer(res.artists.filter((artist: Artist) => artist.geom));
+    mapStore.addLayer(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
     return res;
 }
 
@@ -103,19 +111,17 @@ async function getAPI(request: string) {
         }
         return getRes.data;
     } catch (err) {
-        console.error(`error with the server, make sure it is started ${err}`)
+        console.error(`error with the server, make sure it is started ${err}`);
     }
 }
 
-async function api() {
-    return await getAPI(`/api/artist/list?offset=${artistsData.value.artists.length}`);
-}
 //@ts-ignore
 async function load({ done }) {
     // Perform API call
-    const res: any = await api()
+    const res: any = await getAPI(`/api/artist/list?offset=${artistsData.value.artists.length}`);
     if (res.artists && res.artists.length > 0) {
         artistsData.value.artists.push(...res.artists)
+        mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
         done('ok')
     }
     else {

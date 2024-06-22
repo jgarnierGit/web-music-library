@@ -11,12 +11,12 @@ const axiosInstance = axios.create({
 async function mockAxios() {
     var mock = new MockAdapter(axiosInstance, { delayResponse: 500 });
     mock.onGet("/api/artist/count").reply(200, { result: "1000" });
-    const pathRegex = new RegExp(`\/api\/music\/[\da-f-]{36}\/increment\/`);
+    const pathRegex = new RegExp(`\/api\/music\/[\da-f\-]{36}\/increment\/`);
     const musicRes = {
         name: "fake", album: "fakeAlbum", artist: "fakeArtist",
         count_played: 2
     } as Music;
-    mock.onPost(pathRegex).reply(200, { result: "yes" }); // FIXME this one doesn't work.
+    mock.onPost(/\/api\/music\/[\da-f\-]{36}\/increment/).reply(200, { result: musicRes }); // FIXME this one doesn't work.
 
     const response = await fetch('./mocks/folder-list.json');
     const listFolderResult = await response.json();
@@ -26,9 +26,23 @@ async function mockAxios() {
     const responseArtists = await fetch('./mocks/artist-list.json');
     const listArtistsResult = await responseArtists.json();
 
-    mock.onGet('/api/artist/list').reply(200, listArtistsResult);
-    const pathListArtistRegex = new RegExp(`api/artist\/list\?offset\=[0-9]+`);// FIXME this one doesn't work.
-    mock.onGet(pathListArtistRegex).reply(200, { artists: [] })
+    mock.onGet('/api/artist/list').reply(200, { artists: listArtistsResult.artists.slice(0, 10) });
+    mock.onGet(/\/api\/artist\/list\?offset\=[0-9]+/).reply((config) => {
+        if (!config.url) {
+            return [200, { artists: [] }]
+        }
+        const url = new URL(API_BASE_URL + config.url);
+        const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+        const limit = 10; // The number of items to return
+        const endIndex = Math.min(offset + limit, listArtistsResult.artists.length);
+        if (endIndex === offset) {
+            return [200, { artists: [] }]
+        }
+        return [200, { artists: listArtistsResult.artists.slice(offset, endIndex) }];
+    })
+
+    mock.onPut(/\/api\/artist\/[\da-f\-]{36}/).reply(204);
+    console.log("mocked everything")
 }
 
 if (!isServerRunning) {

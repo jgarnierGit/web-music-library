@@ -330,8 +330,14 @@
         {
             "id": "15c7e869-4953-4b55-824c-d2487897d475",
             "name": "Mcfarland Matthews",
-            "country_name": null,
-            "geom": null,
+            "country_name": "Iceland",
+            "geom": {
+                "type": "Point",
+                "coordinates": [
+                    65.07427634281434,
+                    -18.76102881712185
+                ]
+            },
             "last_played": null,
             "count_played": 0,
             "count_skipped": 0
