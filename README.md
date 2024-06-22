@@ -2,9 +2,9 @@
 
 ![Thumbnail Image](./doc/geoviewer.jpg)
 
-Have you ever wonder of playing your music located in France ? or Canada ?
+Have you ever wonder of playing your music located in France ? or Canada ? or Jamaiqua ?
 
-Just pick a country and let the music play !
+Just pick a country and let the music play ! (WIP)
 
 (Also edit your music library to add geolocalisation link ;) )
 
