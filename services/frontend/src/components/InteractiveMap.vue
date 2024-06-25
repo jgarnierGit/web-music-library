@@ -17,8 +17,9 @@ import * as turf from '@turf/turf';
 import { onMounted, ref } from 'vue'
 import L from 'leaflet';
 import "leaflet.markercluster";
-import { FRONT_PUBLIC_URL } from '~/commons/constants';
+import { useSpatialMapStore } from '../stores/spatialmap';
 import type { GeomData } from '~/commons/interfaces';
+import { FRONT_PUBLIC_URL } from '~/commons/constants';
 
 const FIELD_NAME = "NAME";
 

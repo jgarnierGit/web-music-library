@@ -18,6 +18,13 @@
                 </v-col>
             </v-row>
         </v-container>
+        <v-container fluid v-else-if="dataError">
+            <v-alert density="compact" :icon="mdiCloseCircle" color="error" variant="outlined">
+                Artists access error ...
+                <v-divider color="error"></v-divider>
+                Server log: "{{ dataError }}"
+            </v-alert>
+        </v-container>
         <v-infinite-scroll v-else :height="300" :items="artistsData.artists" :onLoad="load">
             <v-container fluid>
                 <v-row dense justify="start">
@@ -55,14 +62,16 @@
 </template>
 
 <script setup lang="ts">
-import { mdiContentSaveEdit, mdiContentSaveOff, mdiMapMarker } from '@mdi/js';
+import { mdiCloseCircle, mdiContentSaveEdit, mdiContentSaveOff, mdiMapMarker } from '@mdi/js';
 import axiosInstance from '~/axiosInstance';
+import { SNACKBAR_TIMEOUT } from '~/commons/constants';
 import type { Artist, ArtistMapEditorContext, GeomData } from '~/commons/interfaces';
-
+import { getTauriAPI, putTauriAPI, writeErrorLogs } from '~/commons/tauri';
+const snackbarStore = useSnackbarStore();
 const mapStore = useSpatialMapStore();
 const { editionId } = storeToRefs(mapStore);
-const { pending: countPending, data: artistsCount } = await useLazyAsyncData('artistsListCount', () => getAPI(`/api/artist/count`));
-const { pending: dataPending, data: artistsData } = await useLazyAsyncData('artistsListData', () => loadArtists());
+const { pending: countPending, data: artistsCount } = await useLazyAsyncData('artistsListCount', () => getAPI(`/api/artist/count`, 'counting artists'));
+const { pending: dataPending, data: artistsData, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
 
 const mapEditionIcon = computed(() => (id: string) => editionId.value === id ? mdiContentSaveEdit : mdiMapMarker);
 const tooltipMapEditor = computed(() => (id: string) => editionId.value === id ? "Save edition" : "Edit artist location")
@@ -76,9 +85,13 @@ function createGeomData(artists: Artist[]) {
 async function switchEdition(artist: Artist) {
     if (editionId.value === artist.id) {
         mapStore.closeEditionId(artist.id);
-        await axiosInstance.put(`/api/artist/${artist.id}`, artist);
-        mapStore.updateLayerData(createGeomData([artist]));
-        // TODO reintroduce the snacbar
+        try {
+            await putTauriAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
+            mapStore.updateLayerData(createGeomData([artist]));
+        } catch (err) {
+            snackbarStore.setContent(`Error while loading saving artist ${artist.name}, check the logs`, SNACKBAR_TIMEOUT, "error");
+            writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
+        }
     }
     else {
         const editionContext = {} as ArtistMapEditorContext;
@@ -97,14 +110,17 @@ function cancelEdition(id: string) {
 }
 
 async function loadArtists() {
-    const res = await getAPI(`/api/artist/list`);
+    const res = await getAPI(`/api/artist/list`, 'loading artists list');
+    if (!res) {
+        return;
+    }
     mapStore.addLayer(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
     return res;
 }
 
-async function getAPI(request: string) {
+async function getAPI(request: string, context: string) {
     try {
-        const getRes = await axiosInstance.get(request);
+        const getRes = await getTauriAPI(request, context);
         if (getRes.status !== 200) {
             console.error(getRes.data);
             return;
@@ -112,13 +128,14 @@ async function getAPI(request: string) {
         return getRes.data;
     } catch (err) {
         console.error(`error with the server, make sure it is started ${err}`);
+        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
+        writeErrorLogs(`${request} : ${err}`);
     }
 }
 
 //@ts-ignore
 async function load({ done }) {
-    // Perform API call
-    const res: any = await getAPI(`/api/artist/list?offset=${artistsData.value.artists.length}`);
+    const res: any = await getAPI(`/api/artist/list?offset=${artistsData.value.artists.length}`, 'loading more artists');
     if (res.artists && res.artists.length > 0) {
         artistsData.value.artists.push(...res.artists)
         mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));

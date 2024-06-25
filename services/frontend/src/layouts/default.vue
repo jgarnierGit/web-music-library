@@ -15,13 +15,14 @@
             </v-row>
         </v-footer>
         <Milkdrop v-if="isVisible" />
-
+        <SnackBar></SnackBar>
     </v-app>
 </template>
 
 <script setup lang="ts">
 import MusicPlayer from '~/components/MusicPlayer.vue';
 import Milkdrop from '~/components/Milkdrop.vue';
+import SnackBar from '../components/SnackBar.vue';
 const projectM = useProjectMStore();
 const { isVisible, isFocused } = storeToRefs(projectM);
 

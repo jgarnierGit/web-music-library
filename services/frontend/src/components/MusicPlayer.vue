@@ -28,14 +28,17 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { API_BASE_URL, AUDIO_BASE_URL } from '~/commons/constants';
+import { API_BASE_URL, AUDIO_BASE_URL, SNACKBAR_TIMEOUT } from '~/commons/constants';
 import { usePlaylistStore } from '~/stores/playlist';
 import axios from 'axios';
 import { mdiSwapHorizontal, mdiMonitorOff, mdiMonitor, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
+import axiosInstance from '~/axiosInstance';
+import { postTauriAPI, writeErrorLogs } from '~/commons/tauri';
 const projectM = useProjectMStore();
 
 const audioPath = ref<string>();
 const playlist = usePlaylistStore();
+const snackbarStore = useSnackbarStore();
 const audioPlayer = ref();
 const { currentPlaying } = storeToRefs(playlist);
 const { isVisible, isFocused } = storeToRefs(projectM);
@@ -52,15 +55,29 @@ watch(currentPlaying, async (newVal) => {
         audioPath.value = `${AUDIO_BASE_URL}/${newVal.path}`;
 
         enableAudio(audioPlayer.value, false);
-        try {
-            const response = await axios.post(`/api/music/${newVal.id}/increment/`);
-            console.log(response);
-        } catch (err) {
-            console.error(`maybe the server is stopped ${err}`)
+        const response = await postAPI(`/api/music/${newVal.id}/increment/`, 'incrementing play count for artist');
+        if (!response) {
+            return
         }
+        console.log(response);
+
 
     }
 })
+
+async function postAPI(request: string, context: string) {
+    try {
+        const getRes = await postTauriAPI(request, context);
+        if (getRes.status !== 200) {
+            console.error(getRes.data);
+            return;
+        }
+        return getRes.data;
+    } catch (err) {
+        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
+        writeErrorLogs(`${request} : ${err}`);
+    }
+}
 
 function loadMilkdropPreset() {
     loadPreset();

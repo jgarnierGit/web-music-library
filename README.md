@@ -31,6 +31,9 @@ Backend :
   - Geospatial : [GeoDjango](https://docs.djangoproject.com/fr/5.0/ref/contrib/gis/)
   - Audio metadata : [mutagen](https://mutagen.readthedocs.io)
 
+Release :
+  - Frontend : [Tauri](https://tauri.app/)
+
 ## Architecture Diagram
 
 [WIP]

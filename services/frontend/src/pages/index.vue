@@ -24,7 +24,9 @@
   </v-row>
 </template>
 <script setup lang="ts">
-import MusicTree from '~/components/MusicTree.vue';
 import Artists from '~/components/Artists.vue';
+import InteractiveMap from '~/components/InteractiveMap.vue';
+import MusicTree from '~/components/MusicTree.vue';
+
 
 </script>

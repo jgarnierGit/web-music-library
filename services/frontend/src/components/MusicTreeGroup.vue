@@ -28,9 +28,13 @@
 <script setup lang="ts">
 import { mdiCloseCircle, mdiFileMusicOutline, mdiFolder, mdiFolderOpen, mdiPlay } from '@mdi/js';
 import axiosInstance from '~/axiosInstance';
+import { SNACKBAR_TIMEOUT } from '~/commons/constants';
 import type { File, Folder, Music } from '~/commons/interfaces';
+import { postTauriAPI, writeErrorLogs } from '~/commons/tauri';
 import { usePlaylistStore } from '~/stores/playlist';
+import { useSnackbarStore } from '~/stores/snackbar';
 const playlist = usePlaylistStore();
+const snackbarStore = useSnackbarStore();
 
 const hoveringId = ref<string>();
 const loading = ref(false);
@@ -53,17 +57,28 @@ async function loadFolderContent(subFolder: Folder) {
     loading.value = true;
     try {
         // load root content
-        const getRes = await axiosInstance.post('/api/folder/list', { path: subFolder.path });
-        if (getRes.status !== 200) {
-            console.error(getRes.data); // TODO extract to snackBar.
+        const getRes = await postAPI('/api/folder/list', 'loading sub folder content', { path: subFolder.path });
+        if (!getRes) {
             return;
         }
         musicFolder.value.folders = getRes.data.folders;
         musicFolder.value.musics = getRes.data.musics;
-    } catch (err) {
-        console.error(`error with the server, make sure it is started ${err}, or check its logs`)
     } finally {
         loading.value = false;
+    }
+}
+
+async function postAPI(request: string, context: string, playload: any) {
+    try {
+        const getRes = await postTauriAPI(request, context, playload);
+        if (getRes.status !== 200) {
+            console.error(getRes.data);
+            return;
+        }
+        return getRes.data;
+    } catch (err) {
+        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
+        writeErrorLogs(`${request} : ${err}`);
     }
 }
 </script>

@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { API_BASE_URL, VUE_APP_MOCK_SERVER_ENV } from './commons/constants';
+import { API_BASE_URL, IS_PROD, VUE_APP_MOCK_SERVER_ENV } from './commons/constants';
 import MockAdapter from 'axios-mock-adapter';
 import type { Music } from './commons/interfaces';
+import { writeErrorLogs, writeInfoLogs } from './commons/tauri';
 
-const isServerRunning = process.env.NODE_ENV === 'production' || !VUE_APP_MOCK_SERVER_ENV;
+const isServerRunning = IS_PROD && !VUE_APP_MOCK_SERVER_ENV;
 const axiosInstance = axios.create({
     baseURL: isServerRunning ? API_BASE_URL : '',
 });
@@ -42,11 +43,11 @@ async function mockAxios() {
     })
 
     mock.onPut(/\/api\/artist\/[\da-f\-]{36}/).reply(204);
-    console.log("mocked everything")
+    writeInfoLogs("mocked everything");
 }
 
 if (!isServerRunning) {
-    console.error("Server is not connected, axios endpoints disabled, use this only for frontend development, and make sure to mock the API data you need")
+    writeErrorLogs("Server is not connected, axios endpoints disabled, use this only for frontend development, and make sure to mock the API data you need");
     await mockAxios();
 }
 
