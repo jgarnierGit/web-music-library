@@ -63,10 +63,9 @@
 
 <script setup lang="ts">
 import { mdiCloseCircle, mdiContentSaveEdit, mdiContentSaveOff, mdiMapMarker } from '@mdi/js';
-import axiosInstance from '~/axiosInstance';
 import { SNACKBAR_TIMEOUT } from '~/commons/constants';
 import type { Artist, ArtistMapEditorContext, GeomData } from '~/commons/interfaces';
-import { getTauriAPI, putTauriAPI, writeErrorLogs } from '~/commons/tauri';
+import { restAPI } from '~/commons/restAPI';
 const snackbarStore = useSnackbarStore();
 const mapStore = useSpatialMapStore();
 const { editionId } = storeToRefs(mapStore);
@@ -86,11 +85,11 @@ async function switchEdition(artist: Artist) {
     if (editionId.value === artist.id) {
         mapStore.closeEditionId(artist.id);
         try {
-            await putTauriAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
+            await restAPI.putTauriAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
             mapStore.updateLayerData(createGeomData([artist]));
         } catch (err) {
             snackbarStore.setContent(`Error while loading saving artist ${artist.name}, check the logs`, SNACKBAR_TIMEOUT, "error");
-            writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
+            restAPI.writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
         }
     }
     else {
@@ -120,7 +119,7 @@ async function loadArtists() {
 
 async function getAPI(request: string, context: string) {
     try {
-        const getRes = await getTauriAPI(request, context);
+        const getRes = await restAPI.getTauriAPI(request, context);
         if (getRes.status !== 200) {
             console.error(getRes.data);
             return;
@@ -129,7 +128,7 @@ async function getAPI(request: string, context: string) {
     } catch (err) {
         console.error(`error with the server, make sure it is started ${err}`);
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-        writeErrorLogs(`${request} : ${err}`);
+        restAPI.writeErrorLogs(`${request} : ${err}`);
     }
 }
 

@@ -28,12 +28,10 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { API_BASE_URL, AUDIO_BASE_URL, SNACKBAR_TIMEOUT } from '~/commons/constants';
+import { AUDIO_BASE_URL, SNACKBAR_TIMEOUT } from '~/commons/constants';
 import { usePlaylistStore } from '~/stores/playlist';
-import axios from 'axios';
 import { mdiSwapHorizontal, mdiMonitorOff, mdiMonitor, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
-import axiosInstance from '~/axiosInstance';
-import { postTauriAPI, writeErrorLogs } from '~/commons/tauri';
+import { restAPI } from '~/commons/restAPI';
 const projectM = useProjectMStore();
 
 const audioPath = ref<string>();
@@ -43,17 +41,29 @@ const audioPlayer = ref();
 const { currentPlaying } = storeToRefs(playlist);
 const { isVisible, isFocused } = storeToRefs(projectM);
 
-audioPath.value = `/demo.mp3`; //TODO  mock file system
+// audioPath.value = `/demo.mp3`; //TODO  mock file system
 
 const viewerIcon = computed(() => isVisible.value ? mdiMonitorOff : mdiMonitor)
 const viewerIconMode = computed(() => isFocused.value ? mdiFullscreenExit : mdiFullscreen)
 const focusTooltip = computed(() => isFocused.value ? "Background mode" : "Focus mode")
 
-onBeforeMount(() => console.log(AUDIO_BASE_URL));
+onMounted(() => {
+    audioPlayer.value.onerror = function (err: any) {
+        restAPI.writeErrorLogs(`Audio PLayer failed to read audio ${audioPath.value}, ${JSON.stringify(err)}`);
+    }
+})
 watch(currentPlaying, async (newVal) => {
     if (newVal) {
-        audioPath.value = `${AUDIO_BASE_URL}/${newVal.path}`;
+        try {
+            const musicResult = await restAPI.getTauriAPI(newVal.path, 'getting music to play', AUDIO_BASE_URL);
+            restAPI.writeInfoLogs(`music content: ${JSON.stringify(musicResult)}`);
+        } catch (err) {
+            restAPI.writeErrorLogs(`error accessing music ${JSON.stringify(err)}`)
+        }
 
+        audioPath.value = `${AUDIO_BASE_URL}${newVal.path}`;
+
+        restAPI.writeInfoLogs(`playing ${audioPath.value}`);
         enableAudio(audioPlayer.value, false);
         const response = await postAPI(`/api/music/${newVal.id}/increment/`, 'incrementing play count for artist');
         if (!response) {
@@ -67,15 +77,16 @@ watch(currentPlaying, async (newVal) => {
 
 async function postAPI(request: string, context: string) {
     try {
-        const getRes = await postTauriAPI(request, context);
+        const getRes = await restAPI.postTauriAPI(request, context);
         if (getRes.status !== 200) {
+            restAPI.writeErrorLogs(`incrementing ${audioPath.value} failed ${JSON.stringify(getRes)}`);
             console.error(getRes.data);
             return;
         }
         return getRes.data;
     } catch (err) {
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-        writeErrorLogs(`${request} : ${err}`);
+        restAPI.writeErrorLogs(`${request} : ${err}`);
     }
 }
 

@@ -27,10 +27,9 @@
 
 <script setup lang="ts">
 import { mdiCloseCircle, mdiFileMusicOutline, mdiFolder, mdiFolderOpen, mdiPlay } from '@mdi/js';
-import axiosInstance from '~/axiosInstance';
 import { SNACKBAR_TIMEOUT } from '~/commons/constants';
 import type { File, Folder, Music } from '~/commons/interfaces';
-import { postTauriAPI, writeErrorLogs } from '~/commons/tauri';
+import { restAPI } from '~/commons/restAPI';
 import { usePlaylistStore } from '~/stores/playlist';
 import { useSnackbarStore } from '~/stores/snackbar';
 const playlist = usePlaylistStore();
@@ -61,8 +60,8 @@ async function loadFolderContent(subFolder: Folder) {
         if (!getRes) {
             return;
         }
-        musicFolder.value.folders = getRes.data.folders;
-        musicFolder.value.musics = getRes.data.musics;
+        musicFolder.value.folders = getRes.folders;
+        musicFolder.value.musics = getRes.musics;
     } finally {
         loading.value = false;
     }
@@ -70,7 +69,7 @@ async function loadFolderContent(subFolder: Folder) {
 
 async function postAPI(request: string, context: string, playload: any) {
     try {
-        const getRes = await postTauriAPI(request, context, playload);
+        const getRes = await restAPI.postTauriAPI(request, context, playload);
         if (getRes.status !== 200) {
             console.error(getRes.data);
             return;
@@ -78,7 +77,7 @@ async function postAPI(request: string, context: string, playload: any) {
         return getRes.data;
     } catch (err) {
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-        writeErrorLogs(`${request} : ${err}`);
+        restAPI.writeErrorLogs(`${request} : ${err}`);
     }
 }
 </script>

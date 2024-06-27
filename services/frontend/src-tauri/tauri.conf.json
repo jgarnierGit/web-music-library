@@ -16,9 +16,10 @@
         "all": true,
         "request": true,
         "scope": [
-          "http://localhost:8000/*"
+          "http://localhost:8001/*"
         ]
-      }
+      },
+      "fs": {}
     },
     "bundle": {
       "active": true,
@@ -54,6 +55,7 @@
       }
     },
     "security": {
+      "dangerousUseHttpScheme": true,
       "csp": null
     },
     "updater": {

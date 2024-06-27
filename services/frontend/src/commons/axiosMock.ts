@@ -1,23 +1,17 @@
-import axios from 'axios';
-import { API_BASE_URL, IS_PROD, VUE_APP_MOCK_SERVER_ENV } from './commons/constants';
+import { API_BASE_URL } from './constants';
 import MockAdapter from 'axios-mock-adapter';
-import type { Music } from './commons/interfaces';
-import { writeErrorLogs, writeInfoLogs } from './commons/tauri';
+import type { Music } from './interfaces';
+import { axiosInstance, restAPI } from './restAPI';
 
-const isServerRunning = IS_PROD && !VUE_APP_MOCK_SERVER_ENV;
-const axiosInstance = axios.create({
-    baseURL: isServerRunning ? API_BASE_URL : '',
-});
 
-async function mockAxios() {
+export async function mockAxios() {
     var mock = new MockAdapter(axiosInstance, { delayResponse: 500 });
     mock.onGet("/api/artist/count").reply(200, { result: "1000" });
-    const pathRegex = new RegExp(`\/api\/music\/[\da-f\-]{36}\/increment\/`);
     const musicRes = {
         name: "fake", album: "fakeAlbum", artist: "fakeArtist",
         count_played: 2
     } as Music;
-    mock.onPost(/\/api\/music\/[\da-f\-]{36}\/increment/).reply(200, { result: musicRes }); // FIXME this one doesn't work.
+    mock.onPost(/\/api\/music\/[\da-f\-]{36}\/increment/).reply(200, { result: musicRes });
 
     const response = await fetch('./mocks/folder-list.json');
     const listFolderResult = await response.json();
@@ -43,12 +37,6 @@ async function mockAxios() {
     })
 
     mock.onPut(/\/api\/artist\/[\da-f\-]{36}/).reply(204);
-    writeInfoLogs("mocked everything");
+    restAPI.writeInfoLogs("mocked everything");
 }
 
-if (!isServerRunning) {
-    writeErrorLogs("Server is not connected, axios endpoints disabled, use this only for frontend development, and make sure to mock the API data you need");
-    await mockAxios();
-}
-
-export default axiosInstance;

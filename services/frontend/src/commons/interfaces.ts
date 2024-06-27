@@ -48,4 +48,18 @@ interface ArtistMapEditorContext {
     callback: Function
 }
 
-export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext, GeomData }
+interface RestAPI {
+    writeErrorLogs: (log: any) => void,
+
+    writeWarnLogs: (log: any) => void,
+
+    writeInfoLogs: (log: any) => void,
+
+    getTauriAPI: (request: string, context: string, base_url?: string) => Promise<any>,
+
+    postTauriAPI: (request: string, context: string, playload?: any) => Promise<any>,
+
+    putTauriAPI: (request: string, context: string, playload: any) => Promise<any>
+}
+
+export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext, GeomData, RestAPI }

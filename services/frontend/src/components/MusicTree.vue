@@ -21,11 +21,10 @@
     </v-card>
 </template>
 <script setup lang="ts">
-import axiosInstance from '~/axiosInstance';
 import MusicTreeGroup from './MusicTreeGroup.vue';
 import { mdiCloseCircle } from '@mdi/js';
 import { SNACKBAR_TIMEOUT } from '~/commons/constants';
-import { postTauriAPI, writeErrorLogs, writeInfoLogs, writeWarnLogs } from '~/commons/tauri';
+import { restAPI } from '~/commons/restAPI';
 
 const snackbarStore = useSnackbarStore();
 const fileSystemRoot = ref("/music")
@@ -36,26 +35,25 @@ async function loadFolderContent() {
     // load root content
     const getRes = await postAPI('/api/folder/list', 'loading file system root tree');
     if (!getRes) {
-        writeWarnLogs("Got empty system tree");
+        restAPI.writeWarnLogs("Got empty system tree");
         return
     }
-
-    writeInfoLogs("Loaded system tree");
-    return getRes.data;
+    restAPI.writeInfoLogs(`Loaded system tree`);
+    return getRes;
 }
 
 async function postAPI(request: string, context: string) {
     try {
-        const getRes = await postTauriAPI(request, context);
+        const getRes = await restAPI.postTauriAPI(request, context);
         if (getRes.status !== 200) {
             snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-            writeErrorLogs(`${request} : ${getRes}`);
+            restAPI.writeErrorLogs(`${request} : ${getRes}`);
             return
         }
         return getRes.data;
     } catch (err) {
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-        writeErrorLogs(`${request} : ${err}`);
+        restAPI.writeErrorLogs(`${request} : ${err}`);
     }
 }
 </script>
