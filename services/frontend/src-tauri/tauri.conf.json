@@ -19,7 +19,20 @@
           "http://localhost:8001/*"
         ]
       },
-      "fs": {}
+      "fs": {},
+      "shell": {
+        "sidecar": true,
+        "scope": [
+          {
+            "name": "binaries/manage",
+            "sidecar": true,
+            "args": [
+              "runserver",
+              "--noreload"
+            ]
+          }
+        ]
+      }
     },
     "bundle": {
       "active": true,
@@ -28,7 +41,9 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [],
+      "externalBin": [
+        "binaries/manage"
+      ],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",

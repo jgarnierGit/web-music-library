@@ -20,6 +20,7 @@ import "leaflet.markercluster";
 import { useSpatialMapStore } from '../stores/spatialmap';
 import type { GeomData } from '~/commons/interfaces';
 import { FRONT_PUBLIC_URL } from '~/commons/constants';
+import { restAPI } from '~/commons/restAPI';
 
 const FIELD_NAME = "NAME";
 
@@ -179,7 +180,12 @@ function initLeafletMap() {
 
 
 async function loadCountries() {
-    return await shp(`${FRONT_PUBLIC_URL}/geodata/ne_110m_admin_0_countries`);
+    try {
+        return await shp(`${FRONT_PUBLIC_URL}/geodata/ne_110m_admin_0_countries`);
+    } catch (err) {
+        restAPI.writeErrorLogs(`couldn't load shp, ${JSON.stringify(err)}`);
+    }
+
 }
 
 async function createCountriesLayer() {

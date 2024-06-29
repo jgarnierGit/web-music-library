@@ -54,13 +54,6 @@ onMounted(() => {
 })
 watch(currentPlaying, async (newVal) => {
     if (newVal) {
-        try {
-            const musicResult = await restAPI.getTauriAPI(newVal.path, 'getting music to play', AUDIO_BASE_URL);
-            restAPI.writeInfoLogs(`music content: ${JSON.stringify(musicResult)}`);
-        } catch (err) {
-            restAPI.writeErrorLogs(`error accessing music ${JSON.stringify(err)}`)
-        }
-
         audioPath.value = `${AUDIO_BASE_URL}${newVal.path}`;
 
         restAPI.writeInfoLogs(`playing ${audioPath.value}`);

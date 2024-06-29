@@ -56,6 +56,8 @@ A checksum is calculated based on music name, artist name and album name, to mak
 
 [Docker](https://www.docker.com/)
 
+# Development
+
 ## Configuration
 
 edit .env example before first launch :
@@ -96,6 +98,18 @@ front end dev, set this variable to disable API calls if you do not plan to work
       VUE_APP_MOCK_SERVER: true
     },
 ```
+
+## building production - PoC
+
+### Windows 
+
+WIP Does not contains postgres + gdal binaries, nginx not included either. Will not work without those binaries
+
+ - configure `./services/backend/manage.spec` to includes new modules + third part binaries
+ - compile executable `services/backend > docker run --volume "%cd%:/src/" batonogov/pyinstaller-windows:latest`
+ - copy `./services/backend/dist/*.exe` in `./services/frontend/src-tauri/binaries`
+ - rename the executable as `*-x86_64-pc-windows-msvc.exe`
+ - then `services/frontend > npm run tauri build`
 
 # Thanks
 
