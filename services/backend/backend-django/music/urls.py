@@ -10,6 +10,11 @@ urlpatterns = [
         name="increment_played",
     ),
     path(
+        "music/getRandom",
+        views.PlaylistNextView.as_view(),
+        name="get_next_music_random",
+    ),
+    path(
         "artist/<str:artist_name>/getCountry",
         views.ArtistCountryView.as_view(),
         name="get_artist_country",

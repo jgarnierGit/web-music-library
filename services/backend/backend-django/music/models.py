@@ -129,6 +129,12 @@ class ArtistSerializer(serializers.ModelSerializer):
         return data
 
 
+class ArtistNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artist
+        fields = ["name"]
+
+
 class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
@@ -137,9 +143,9 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 class MusicSerializer(serializers.ModelSerializer):
 
-    # artist = ArtistSerializer(allow_null=True)
+    artist = ArtistNameSerializer(allow_null=True)
     # album = AlbumSerializer(allow_null=True)
 
     class Meta:
         model = Music
-        fields = ["id", "name", "path"]
+        fields = ["id", "name", "path", "artist"]

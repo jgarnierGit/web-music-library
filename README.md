@@ -4,13 +4,14 @@
 
 Have you ever wonder of playing your music located in France ? or Canada ? or Jamaiqua ?
 
-Just pick a country and let the music play ! (WIP)
+Just pick a country and let the music play !
 
 (Also edit your music library to add geolocalisation link ;) )
 
 ## What it is
 
 - An Audio manager and player. Currently supporting MP3, OGG & WAV as I simply use <audio> html element. Sorry for all FLAC lovers.
+- Define playlist from each available panels
 
 ## What it is not
 

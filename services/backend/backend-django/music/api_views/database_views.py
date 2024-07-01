@@ -5,6 +5,7 @@ from ..models import Music, Artist, MusicSerializer, ArtistSerializer
 from django.contrib.gis.geos import GEOSGeometry
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
+from random import choice
 
 
 class IncrementMusicPlayedView(APIView):
@@ -63,3 +64,39 @@ def artist_count(request):
     count_artists = Artist.objects.count()
     print(count_artists)
     return JsonResponse({"result": count_artists})
+
+
+class PlaylistNextView(APIView):
+    def post(self, request):
+        music_filter = request.data
+        if music_filter:
+            match music_filter["filter_value"]["type"]:
+                case "ARTIST":
+                    musics_pk = Music.objects.filter(
+                        artist__pk__in=music_filter["filter_value"]["targetIds"]
+                    ).values_list("pk", flat=True)
+                case "FOLDER":
+                    if len(music_filter["filter_value"]["targetIds"]) == 1:
+                        musics_pk = Music.objects.filter(
+                            path__startswith=music_filter["filter_value"]["targetIds"][
+                                0
+                            ]
+                        ).values_list("pk", flat=True)
+                    else:
+                        print("multi folder filtering not implemented yet")
+                case "COUNTRY":
+                    musics_pk = Music.objects.filter(
+                        artist__country_name__in=music_filter["filter_value"][
+                            "targetIds"
+                        ]
+                    ).values_list("pk", flat=True)
+                case _:
+                    print("unknown filter, or empty filter, fallback to full random")
+                    musics_pk = Music.objects.values_list("pk", flat=True)
+        else:
+            musics_pk = Music.objects.values_list("pk", flat=True)
+        # watch out perfs about loading the whole pk list in memory
+
+        random_pk = choice(musics_pk)
+        random_obj = Music.objects.get(pk=random_pk)
+        return JsonResponse(MusicSerializer(random_obj).data)

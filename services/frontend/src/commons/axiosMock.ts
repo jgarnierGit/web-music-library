@@ -1,14 +1,14 @@
 import { API_BASE_URL } from './constants';
 import MockAdapter from 'axios-mock-adapter';
 import type { Music } from './interfaces';
-import { axiosInstance, restAPI } from './restAPI';
+import { axiosInstance, writeInfoLogs } from './restAPI';
 
 
 export async function mockAxios() {
     var mock = new MockAdapter(axiosInstance, { delayResponse: 500 });
     mock.onGet("/api/artist/count").reply(200, { result: "1000" });
     const musicRes = {
-        name: "fake", album: "fakeAlbum", artist: "fakeArtist",
+        name: "fake", album: "fakeAlbum", artist: { name: "fakeArtist" },
         count_played: 2
     } as Music;
     mock.onPost(/\/api\/music\/[\da-f\-]{36}\/increment/).reply(200, { result: musicRes });
@@ -37,6 +37,6 @@ export async function mockAxios() {
     })
 
     mock.onPut(/\/api\/artist\/[\da-f\-]{36}/).reply(204);
-    restAPI.writeInfoLogs("mocked everything");
+    writeInfoLogs("mocked everything");
 }
 

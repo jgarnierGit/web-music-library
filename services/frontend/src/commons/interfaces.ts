@@ -20,7 +20,7 @@ interface Music {
     path: string,
     name: string,
     album: string,
-    artist: string,
+    artist: Artist,
     count_played: number
 }
 
@@ -55,11 +55,11 @@ interface RestAPI {
 
     writeInfoLogs: (log: any) => void,
 
-    getTauriAPI: (request: string, context: string, base_url?: string) => Promise<any>,
+    execGetAPI: (request: string, context: string, base_url?: string) => Promise<any>,
 
-    postTauriAPI: (request: string, context: string, playload?: any) => Promise<any>,
+    execPostAPI: (request: string, context: string, playload?: any) => Promise<any>,
 
-    putTauriAPI: (request: string, context: string, playload: any) => Promise<any>
+    execPutAPI: (request: string, context: string, playload: any) => Promise<any>
 }
 
 export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext, GeomData, RestAPI }

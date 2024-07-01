@@ -1,7 +1,14 @@
 import axios from 'axios';
-import { API_BASE_URL, IS_PROD, VUE_APP_MOCK_SERVER_ENV } from "./constants";
+import { API_BASE_URL, IS_PROD, SNACKBAR_TIMEOUT, VUE_APP_MOCK_SERVER_ENV } from "./constants";
 import type { RestAPI } from "./interfaces";
 import { mockAxios } from './axiosMock';
+import { createPinia } from 'pinia';
+const { vueApp } = useNuxtApp()
+
+const pinia = createPinia();
+vueApp.use(pinia);
+
+const snackbarStore = useSnackbarStore();
 
 const IS_SERVER_RUNNING = IS_PROD || !VUE_APP_MOCK_SERVER_ENV;
 const axiosInstance = axios.create({
@@ -21,7 +28,7 @@ var restAPI: RestAPI = {
         console.log(log);
     },
 
-    getTauriAPI: async (request: string, context: string, base_url?: string) => {
+    execGetAPI: async (request: string, context: string, base_url?: string) => {
         try {
             const axiosResult = await axiosInstance.get(request);
             return Promise.resolve(axiosResult);
@@ -30,7 +37,7 @@ var restAPI: RestAPI = {
         }
     },
 
-    postTauriAPI: async (request: string, context: string, playload?: any) => {
+    execPostAPI: async (request: string, context: string, playload?: any) => {
         try {
             const axiosResult = await axiosInstance.post(request, playload);
             return Promise.resolve(axiosResult);
@@ -39,7 +46,7 @@ var restAPI: RestAPI = {
         }
     },
 
-    putTauriAPI: async (request: string, context: string, playload: any) => {
+    execPutAPI: async (request: string, context: string, playload: any) => {
         try {
             const axiosResult = await axiosInstance.put(request, playload);
             return Promise.resolve(axiosResult);
@@ -78,7 +85,7 @@ if (window.__TAURI__) {
         invoke('write_log', { log_message: `INFO: ${log}` });
     }
 
-    restAPI.getTauriAPI = async function (request: string, context: string, base_url?: string): Promise<any> {
+    restAPI.execGetAPI = async function (request: string, context: string, base_url?: string): Promise<any> {
         const url = (base_url ?? API_BASE_URL) + request;
         this.writeInfoLogs(`get url : ${url}`);
         return await fetch(url, {
@@ -87,7 +94,7 @@ if (window.__TAURI__) {
         });
     }
 
-    restAPI.postTauriAPI = async function (request: string, context: string, playload?: any): Promise<any> {
+    restAPI.execPostAPI = async function (request: string, context: string, playload?: any): Promise<any> {
         const params: any = {
             method: "POST",
             responseType: ResponseType.JSON,
@@ -99,7 +106,7 @@ if (window.__TAURI__) {
         return result;
     }
 
-    restAPI.putTauriAPI = async function (request: string, context: string, playload: any): Promise<any> {
+    restAPI.execPutAPI = async function (request: string, context: string, playload: any): Promise<any> {
         const params: any = {
             method: "PUT",
             body: Body.json(playload),
@@ -113,4 +120,59 @@ else if (!IS_SERVER_RUNNING) {
     await mockAxios();
 }
 
-export { restAPI, axiosInstance };
+async function getAPI(request: string, context: string) {
+    try {
+        const getRes = await restAPI.execGetAPI(request, context);
+        if (getRes.status !== 200) {
+            console.error(getRes.data);
+            return;
+        }
+        return getRes.data;
+    } catch (err) {
+        console.error(`error with the server, make sure it is started ${err}`);
+        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
+        restAPI.writeErrorLogs(`${request} : ${err}`);
+    }
+}
+
+async function postAPI(request: string, context: string, playload?: any) {
+    try {
+        const getRes = await restAPI.execPostAPI(request, context, playload);
+        if (getRes.status !== 200) {
+            console.error(getRes.data);
+            return;
+        }
+        return getRes.data;
+    } catch (err) {
+        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
+        restAPI.writeErrorLogs(`${request} : ${err}`);
+    }
+}
+
+async function putAPI(request: string, context: string, playload: any) {
+    try {
+        const getRes = await restAPI.execPutAPI(request, context, playload);
+        if (getRes.status < 200 || getRes.status > 299) {
+            console.error(getRes.data);
+            return;
+        }
+        return getRes.data;
+    } catch (err) {
+        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
+        restAPI.writeErrorLogs(`${request} : ${err}`);
+    }
+}
+
+function writeErrorLogs(log: any) {
+    restAPI.writeErrorLogs(log);
+}
+
+function writeWarnLogs(log: any) {
+    restAPI.writeWarnLogs(log);
+}
+
+function writeInfoLogs(log: any) {
+    restAPI.writeInfoLogs(log);
+}
+
+export { axiosInstance, getAPI, postAPI, putAPI, writeErrorLogs, writeWarnLogs, writeInfoLogs };

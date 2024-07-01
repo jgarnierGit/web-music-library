@@ -24,7 +24,7 @@
 import MusicTreeGroup from './MusicTreeGroup.vue';
 import { mdiCloseCircle } from '@mdi/js';
 import { SNACKBAR_TIMEOUT } from '~/commons/constants';
-import { restAPI } from '~/commons/restAPI';
+import { postAPI, writeInfoLogs, writeWarnLogs } from '~/commons/restAPI';
 
 const snackbarStore = useSnackbarStore();
 const fileSystemRoot = ref("/music")
@@ -35,25 +35,10 @@ async function loadFolderContent() {
     // load root content
     const getRes = await postAPI('/api/folder/list', 'loading file system root tree');
     if (!getRes) {
-        restAPI.writeWarnLogs("Got empty system tree");
+        writeWarnLogs("Got empty system tree");
         return
     }
-    restAPI.writeInfoLogs(`Loaded system tree`);
+    writeInfoLogs(`Loaded system tree`);
     return getRes;
-}
-
-async function postAPI(request: string, context: string) {
-    try {
-        const getRes = await restAPI.postTauriAPI(request, context);
-        if (getRes.status !== 200) {
-            snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-            restAPI.writeErrorLogs(`${request} : ${getRes}`);
-            return
-        }
-        return getRes.data;
-    } catch (err) {
-        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-        restAPI.writeErrorLogs(`${request} : ${err}`);
-    }
 }
 </script>

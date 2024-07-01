@@ -22,7 +22,7 @@ export default defineNuxtConfig({
   ],
   vite: {
     define: {
-      VUE_APP_MOCK_SERVER: true
+      VUE_APP_MOCK_SERVER: false
     },
     vue: {
       template: {

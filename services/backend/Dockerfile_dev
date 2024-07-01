@@ -14,4 +14,4 @@ COPY ./requirements_dev.txt /app/requirements_dev.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements_dev.txt
 
-CMD ["./run_dev.sh"]
+CMD ["/app/run_dev.sh"]

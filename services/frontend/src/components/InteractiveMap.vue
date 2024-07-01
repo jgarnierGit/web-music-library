@@ -7,6 +7,10 @@
         <v-sheet height="70vh" max-height="90vh" rounded="lg">
             <div id="musicMap" class="mapContainer">
             </div>
+            <div ref="mapPlayerButton">
+                Play from {{ activeCountryPopup }}
+                <playlist-actions :type="PLAYLIST_TYPES.COUNTRY" :value="activeCountryPopup" />
+            </div>
         </v-sheet>
     </v-card>
 </template>
@@ -19,19 +23,23 @@ import L from 'leaflet';
 import "leaflet.markercluster";
 import { useSpatialMapStore } from '../stores/spatialmap';
 import type { GeomData } from '~/commons/interfaces';
-import { FRONT_PUBLIC_URL } from '~/commons/constants';
-import { restAPI } from '~/commons/restAPI';
+import { FRONT_PUBLIC_URL, PLAYLIST_TYPES } from '~/commons/constants';
+import { writeErrorLogs } from '~/commons/restAPI';
 
 const FIELD_NAME = "NAME";
 
 const countriesLayerBuffers = await useAsyncData('countries', () => loadCountries());
 const countriesLayer = ref();
+const activeCountryPopup = ref();
 const mapStore = useSpatialMapStore();
+const playlist = usePlaylistStore();
 const { editionId, editorContext, geomLayerData } = storeToRefs(mapStore);
-
+const mapPlayerButton = ref();
 const layersCountValues = ref();
+const clusterPopupPlayer = ref();
 const editionMarker = shallowRef();
-const tooltip = shallowRef();
+const countryTooltip = shallowRef();
+const ArtistTooltip = shallowRef();
 const readMarkers = shallowRef();
 const activeReadCountries = shallowRef<any[]>([]);
 // avoid zoom side effect on leaftlet map events (un)binding one could have using regular ref()
@@ -70,12 +78,17 @@ function createReadMarkers(data: GeomData[]) {
         return;
     }
     if (!readMarkers.value) {
-        readMarkers.value = L.markerClusterGroup({ animateAddingMarkers: true, showCoverageOnHover: false, zoomToBoundsOnClick: true });
+        readMarkers.value = L.markerClusterGroup({ animateAddingMarkers: true, showCoverageOnHover: false });
         readMarkers.value.on('mouseover', (a: any) => hilightCountryFromReadMarker(a));
         readMarkers.value.on('mouseout', (a: any) => resetCountryStyleReadMarker(a));
-        readMarkers.value.on('click', playCountry);
+        readMarkers.value.on('click', setActiveCountry);
         readMarkers.value.on('clusterclick', function (a: any) {
-            // a.layer.zoomToBounds({ padding: [20, 20] });
+            clusterPopupPlayer.value = L.popup()
+                .setLatLng(a.layer.getLatLng())
+                .setContent(mapPlayerButton.value)
+                //@ts-ignore
+                .openOn(leafletMap.value);
+            setActiveCountry(a);
         });
         readMarkers.value.on('clustermouseover', function (a: any) {
             hilightCoutriesReaderCluster(a);
@@ -85,12 +98,25 @@ function createReadMarkers(data: GeomData[]) {
         });
     }
     readMarkers.value.clearLayers();
-    const markersList = data.map((geoData: GeomData) => L.marker([geoData.geom.coordinates[0], geoData.geom.coordinates[1]]))
+    const markersList = data.map((geoData: GeomData) => {
+        //TODO find a way to replace title with a tooltip
+        return L.marker([geoData.geom.coordinates[0], geoData.geom.coordinates[1]], { title: geoData.feature_name }).bindPopup(mapPlayerButton.value)
+
+    })
     readMarkers.value.addLayers(markersList);
     if (!leafletMap.value.hasLayer(readMarkers.value)) {
         leafletMap.value.addLayer(readMarkers.value);
     }
 
+}
+
+function setActiveCountry(a: any) {
+    const activeCountries = activeReadCountries.value.map((layer) => layer.feature.properties[FIELD_NAME]);
+    if (activeCountries.length === 1) {
+        activeCountryPopup.value = activeCountries[0]
+    } else {
+        writeErrorLogs("multi countries filtering not handled yet");
+    }
 }
 
 function hilightCoutriesReaderCluster(a: any) {
@@ -145,6 +171,17 @@ function hilightCountryFromReadMarker(a: any) {
             if (isIntersecting) {
                 activeReadCountries.value.push(layer)
                 layer.setStyle(style.hilight);
+                const targetedArtists = geomLayerData.value?.filter((geomData: GeomData) => geomData.name === layer.feature.properties[FIELD_NAME]);
+                if (!targetedArtists) {
+                    return
+                }
+                if (targetedArtists.length === 1) {
+                    ArtistTooltip.value = L.tooltip()
+                        .setLatLng(a.latlng)
+                        .setContent(targetedArtists[0].feature_name)
+                        //@ts-ignore
+                        .addTo(leafletMap.value);
+                }
             }
         });
     }
@@ -153,11 +190,9 @@ function hilightCountryFromReadMarker(a: any) {
 function resetCountryStyleReadMarker(a: any) {
     activeReadCountries.value.forEach((layer) => countriesLayer.value.resetStyle(layer));
     activeReadCountries.value = [];
-}
-
-function playCountry(e: any) {
-    console.log("start playing");
-    // TODO add to playlist activeReadCountries.value []
+    if (ArtistTooltip.value) {
+        ArtistTooltip.value.remove();
+    }
 }
 
 onMounted(() => {
@@ -183,7 +218,7 @@ async function loadCountries() {
     try {
         return await shp(`${FRONT_PUBLIC_URL}/geodata/ne_110m_admin_0_countries`);
     } catch (err) {
-        restAPI.writeErrorLogs(`couldn't load shp, ${JSON.stringify(err)}`);
+        writeErrorLogs(`couldn't load shp, ${JSON.stringify(err)}`);
     }
 
 }
@@ -236,23 +271,33 @@ const style = {
 function highlightFeature(e: any) {
     let layer = e.target;
     layer.setStyle(style.hilight);
-    if (!!editionId.value && leafletMap.value) {
-        tooltip.value = L.tooltip()
+    if (!leafletMap.value) {
+        return
+    }
+    if (!!editionId.value) {
+        countryTooltip.value = L.tooltip()
             .setLatLng(e.latlng)
             .setContent(e.target.feature.properties[FIELD_NAME])
+            .addTo(leafletMap.value);
+    } else if (!editionId.value && layersCountValues.value && layersCountValues.value[e.target.feature.properties[FIELD_NAME]]) {
+        countryTooltip.value = L.tooltip()
+            .setLatLng(e.latlng)
+            .setContent(`Play from ${e.target.feature.properties[FIELD_NAME]}`)
             .addTo(leafletMap.value);
     }
 }
 
 function resetHighlight(e: any) {
     countriesLayer.value.resetStyle(e.target);
-    if (!!editionId.value && leafletMap.value) {
-        tooltip.value.remove();
+    if (countryTooltip.value && leafletMap.value) {
+        countryTooltip.value.remove();
     }
 }
 
 async function pickCountry(event: any) {
     if (!editionId.value) {
+        await playlist.setFilter(PLAYLIST_TYPES.COUNTRY, [event.target.feature.properties[FIELD_NAME]]);
+        playlist.playNextSong();
         return;
     }
     updateEditionMarker(event);

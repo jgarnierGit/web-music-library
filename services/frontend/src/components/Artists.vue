@@ -29,10 +29,15 @@
             <v-container fluid>
                 <v-row dense justify="start">
                     <v-col cols="3" v-for="artist in artistsData.artists" :key="artist.id">
-                        <v-card>
-                            <v-img src="/default_artist.png" class="align-end"
-                                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" cover>
-                                <v-card-title class="text-white" v-text="artist.name"></v-card-title>
+                        <v-card max-width="20vw">
+                            <v-img src="/default_artist.png" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" cover>
+
+                                <v-toolbar color="transparent">
+                                    <v-toolbar-title class="text-white" v-text="artist.name"></v-toolbar-title>
+                                    <template v-slot:append>
+                                        <playlist-actions :type="PLAYLIST_TYPES.ARTIST" :value="artist.id" />
+                                    </template>
+                                </v-toolbar>
                             </v-img>
                             <v-card-text>
                                 {{ artist.country_name }}
@@ -63,9 +68,9 @@
 
 <script setup lang="ts">
 import { mdiCloseCircle, mdiContentSaveEdit, mdiContentSaveOff, mdiMapMarker } from '@mdi/js';
-import { SNACKBAR_TIMEOUT } from '~/commons/constants';
+import { PLAYLIST_TYPES, SNACKBAR_TIMEOUT } from '~/commons/constants';
 import type { Artist, ArtistMapEditorContext, GeomData } from '~/commons/interfaces';
-import { restAPI } from '~/commons/restAPI';
+import { getAPI, putAPI, writeErrorLogs } from '~/commons/restAPI';
 const snackbarStore = useSnackbarStore();
 const mapStore = useSpatialMapStore();
 const { editionId } = storeToRefs(mapStore);
@@ -73,7 +78,7 @@ const { pending: countPending, data: artistsCount } = await useLazyAsyncData('ar
 const { pending: dataPending, data: artistsData, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
 
 const mapEditionIcon = computed(() => (id: string) => editionId.value === id ? mdiContentSaveEdit : mdiMapMarker);
-const tooltipMapEditor = computed(() => (id: string) => editionId.value === id ? "Save edition" : "Edit artist location")
+const tooltipMapEditor = computed(() => (id: string) => editionId.value === id ? "Save edition" : "Edit artist location");
 
 function createGeomData(artists: Artist[]) {
     return artists.map((artist: Artist) => {
@@ -85,11 +90,11 @@ async function switchEdition(artist: Artist) {
     if (editionId.value === artist.id) {
         mapStore.closeEditionId(artist.id);
         try {
-            await restAPI.putTauriAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
+            await putAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
             mapStore.updateLayerData(createGeomData([artist]));
         } catch (err) {
             snackbarStore.setContent(`Error while loading saving artist ${artist.name}, check the logs`, SNACKBAR_TIMEOUT, "error");
-            restAPI.writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
+            writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
         }
     }
     else {
@@ -115,21 +120,6 @@ async function loadArtists() {
     }
     mapStore.addLayer(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
     return res;
-}
-
-async function getAPI(request: string, context: string) {
-    try {
-        const getRes = await restAPI.getTauriAPI(request, context);
-        if (getRes.status !== 200) {
-            console.error(getRes.data);
-            return;
-        }
-        return getRes.data;
-    } catch (err) {
-        console.error(`error with the server, make sure it is started ${err}`);
-        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-        restAPI.writeErrorLogs(`${request} : ${err}`);
-    }
 }
 
 //@ts-ignore

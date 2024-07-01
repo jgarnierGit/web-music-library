@@ -2,9 +2,22 @@
     <v-list-group :subgroup="true" :key="musicFolder.path">
         <template v-slot:activator="{ props, isOpen }">
             <v-list-item v-if="hasContent" v-bind="props" :title="musicFolder.name"
-                :prepend-icon="folderIcon(musicFolder, isOpen)" />
-            <v-list-item v-else v-bind="props" :title="musicFolder.name" :prepend-icon="mdiFolder"
-                @click="loadFolderContent(musicFolder)" />
+                v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
+                <template v-slot:prepend>
+                    <v-icon v-if="!hoveringFolder">{{ folderIcon(musicFolder, isOpen) }}</v-icon>
+                    <playlist-actions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
+                </template>
+
+            </v-list-item>
+
+            <v-list-item v-else v-bind="props" :title="musicFolder.name" @click="loadFolderContent(musicFolder)"
+                v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
+                <template v-slot:prepend>
+                    <v-icon v-if="!hoveringFolder">{{ mdiFolder }}</v-icon>
+                    <playlist-actions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
+                </template>
+
+            </v-list-item>
         </template>
         <v-skeleton-loader type="list-item" v-if="loading"></v-skeleton-loader>
         <v-list-item v-for="(file, i) in musicFolder.musics" @click="startPlay(file.music)" :ripple="!file.error"
@@ -27,15 +40,14 @@
 
 <script setup lang="ts">
 import { mdiCloseCircle, mdiFileMusicOutline, mdiFolder, mdiFolderOpen, mdiPlay } from '@mdi/js';
-import { SNACKBAR_TIMEOUT } from '~/commons/constants';
+import { PLAYLIST_TYPES } from '~/commons/constants';
 import type { File, Folder, Music } from '~/commons/interfaces';
-import { restAPI } from '~/commons/restAPI';
+import { postAPI } from '~/commons/restAPI';
 import { usePlaylistStore } from '~/stores/playlist';
-import { useSnackbarStore } from '~/stores/snackbar';
 const playlist = usePlaylistStore();
-const snackbarStore = useSnackbarStore();
 
 const hoveringId = ref<string>();
+const hoveringFolder = ref(false);
 const loading = ref(false);
 
 const folderIcon = computed(() => (folder: Folder, isOpen: boolean) => isOpen ? mdiFolderOpen : mdiFolder) // TODO folder.path === hoveringId.value ? mdiPlay :
@@ -67,17 +79,4 @@ async function loadFolderContent(subFolder: Folder) {
     }
 }
 
-async function postAPI(request: string, context: string, playload: any) {
-    try {
-        const getRes = await restAPI.postTauriAPI(request, context, playload);
-        if (getRes.status !== 200) {
-            console.error(getRes.data);
-            return;
-        }
-        return getRes.data;
-    } catch (err) {
-        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
-        restAPI.writeErrorLogs(`${request} : ${err}`);
-    }
-}
 </script>
