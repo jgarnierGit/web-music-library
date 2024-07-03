@@ -8,11 +8,10 @@
           </v-sheet>
         </v-col>
       </v-row>
-
       <v-row>
         <v-col>
           <v-sheet rounded="lg">
-            <Artists />
+            <ArtistsCards />
           </v-sheet>
         </v-col>
       </v-row>
@@ -24,7 +23,7 @@
   </v-row>
 </template>
 <script setup lang="ts">
-import Artists from '~/components/Artists.vue';
+import ArtistsCards from '~/components/artist/ArtistsCards.vue';
 import InteractiveMap from '~/components/InteractiveMap.vue';
 import MusicTree from '~/components/MusicTree.vue';
 

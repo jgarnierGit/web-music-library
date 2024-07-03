@@ -1,16 +1,6 @@
 <template>
     <v-card>
-        <v-toolbar density="compact">
-            <v-toolbar-title>Artists
-                <v-badge v-if="!countPending" :content="artistsCount.result" inline />
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-toolbar-items>
-                <v-btn icon v-if="countPending" variant="text" readonly>
-                    <v-progress-circular :size="20" :width="2" indeterminate></v-progress-circular>
-                </v-btn>
-            </v-toolbar-items>
-        </v-toolbar>
+        <ArtistToolbar />
         <v-container fluid v-if="dataPending">
             <v-row dense justify="start">
                 <v-col cols="3" v-for="n in 3">
@@ -71,20 +61,17 @@ import { mdiCloseCircle, mdiContentSaveEdit, mdiContentSaveOff, mdiMapMarker } f
 import { PLAYLIST_TYPES, SNACKBAR_TIMEOUT } from '~/commons/constants';
 import type { Artist, ArtistMapEditorContext, GeomData } from '~/commons/interfaces';
 import { getAPI, putAPI, writeErrorLogs } from '~/commons/restAPI';
+import ArtistToolbar from './ArtistToolbar.vue';
+import { createGeomData } from '~/commons/utils';
 const snackbarStore = useSnackbarStore();
 const mapStore = useSpatialMapStore();
 const { editionId } = storeToRefs(mapStore);
-const { pending: countPending, data: artistsCount } = await useLazyAsyncData('artistsListCount', () => getAPI(`/api/artist/count`, 'counting artists'));
 const { pending: dataPending, data: artistsData, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
 
 const mapEditionIcon = computed(() => (id: string) => editionId.value === id ? mdiContentSaveEdit : mdiMapMarker);
 const tooltipMapEditor = computed(() => (id: string) => editionId.value === id ? "Save edition" : "Edit artist location");
 
-function createGeomData(artists: Artist[]) {
-    return artists.map((artist: Artist) => {
-        return { id: artist.id, name: artist.country_name, geom: artist.geom, feature_name: artist.name } as GeomData;
-    })
-}
+
 
 async function switchEdition(artist: Artist) {
     if (editionId.value === artist.id) {
@@ -118,7 +105,7 @@ async function loadArtists() {
     if (!res) {
         return;
     }
-    mapStore.addLayer(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
+    mapStore.addLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
     return res;
 }
 

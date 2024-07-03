@@ -37,6 +37,15 @@ export async function mockAxios() {
     })
 
     mock.onPut(/\/api\/artist\/[\da-f\-]{36}/).reply(204);
+
+    mock.onGet(/\/api\/artist\/(?<artistName>[^\/]+)\/getCountry/).reply((config) => {
+        if (config.url?.includes("Spencer Whitehead")) {
+            // ES = ["El Salvador", "eSwatini", "Spain" ]; NI = [ "Nicaragua", "Nigeria" ]
+            return [200, { result: ["ES", "NI"] }]
+        }
+        // FR = ["France"]
+        return [200, { result: ["FR"] }]
+    });
     writeInfoLogs("mocked everything");
 }
 

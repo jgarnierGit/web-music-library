@@ -20,7 +20,7 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         editionId.value = undefined;
     }
 
-    function addLayer(data: GeomData[]) {
+    function addLayerData(data: GeomData[]) {
         geomLayerData.value = data;
     }
 
@@ -40,14 +40,11 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
                 valuesToPush.push(geomData);
             }
         })
-
-
         if (valuesToPush.length > 0) {
             const newArray = geomLayerData.value.concat(valuesToPush)
             geomLayerData.value = newArray;
         }
     }
 
-
-    return { editionId, editorContext, geomLayerData, openEditionForId, closeEditionId, addLayer, updateLayerData };
+    return { editionId, editorContext, geomLayerData, openEditionForId, closeEditionId, addLayerData, updateLayerData };
 });

@@ -38,7 +38,7 @@ class ArtistsListView(APIView):
                     {"error": "Invalid offset value"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        artists = Artist.objects.all()[offset:limit]
+        artists = Artist.objects.all()[offset : offset + limit]
         return JsonResponse(
             {"artists": [ArtistSerializer(artist).data for artist in artists]}
         )

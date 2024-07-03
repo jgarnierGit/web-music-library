@@ -1,5 +1,6 @@
 <template>
-    <v-app class="app ">
+    <v-app class="app">
+        <MusicMenu />
         <v-main v-show="!isFocused">
             <v-container class="background-over-milkdrop">
                 <slot />
@@ -23,6 +24,7 @@
 import MusicPlayer from '~/components/MusicPlayer.vue';
 import Milkdrop from '~/components/Milkdrop.vue';
 import SnackBar from '../components/SnackBar.vue';
+import MusicMenu from '~/components/MusicMenu.vue';
 const projectM = useProjectMStore();
 const { isVisible, isFocused } = storeToRefs(projectM);
 
