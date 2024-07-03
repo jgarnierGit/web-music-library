@@ -21,14 +21,14 @@ export async function mockAxios() {
     const responseArtists = await fetch('./mocks/artist-list.json');
     const listArtistsResult = await responseArtists.json();
 
-    mock.onGet('/api/artist/list').reply(200, { artists: listArtistsResult.artists.slice(0, 10) });
+    mock.onGet('/api/artist/list').reply(200, { artists: listArtistsResult.artists.slice(0, 20) });
     mock.onGet(/\/api\/artist\/list\?offset\=[0-9]+/).reply((config) => {
         if (!config.url) {
             return [200, { artists: [] }]
         }
         const url = new URL(API_BASE_URL + config.url);
         const offset = parseInt(url.searchParams.get('offset') || '0', 10);
-        const limit = 10; // The number of items to return
+        const limit = 20;
         const endIndex = Math.min(offset + limit, listArtistsResult.artists.length);
         if (endIndex === offset) {
             return [200, { artists: [] }]
@@ -42,6 +42,8 @@ export async function mockAxios() {
         if (config.url?.includes("Spencer Whitehead")) {
             // ES = ["El Salvador", "eSwatini", "Spain" ]; NI = [ "Nicaragua", "Nigeria" ]
             return [200, { result: ["ES", "NI"] }]
+        } else if (config.url?.includes("Nanette Neal")) {
+            return [200, { result: [] }]
         }
         // FR = ["France"]
         return [200, { result: ["FR"] }]

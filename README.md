@@ -1,6 +1,6 @@
 # Music Library player
 
-![Thumbnail Image](./doc/geoviewer.jpg)
+![Music library](./doc/geoviewer.jpg "Music library")
 
 Have you ever wonder of playing your music located in France ? or Canada ? or Jamaiqua ?
 
@@ -41,17 +41,32 @@ Release :
 
 ## Features 
 
- - Music library accessing in readonly mode to your local library
- - Database persistency with metadata exposition
- - Geospatial music localizer editor & filtering - WIP  (ne_110m_admin_0_countries)
- - ProjectM Milkdrop vizualisation
+- Music library accessing in readonly mode to your local library
+  - Musics from your fileSystem are saved in the database on the first reach.
+- Database persistency with metadata exposition
 
-Musics from your fileSystem are saved in the database on the first reach.
+- Geospatial music filtering
+
+  ![Geospatial filtering](./doc/playlist_geospatial.jpg "Geospatial filtering")
+
+- Geospatial music editor via [Musicbrainz](https://musicbrainz.org) API
+
+  ![MusicBrainz positioning](./doc/guessing_position.jpg "MusicBrainz positioning")
+
+- Geospatial music editor manual picking (either to fix ne_110m_admin_0_countries precision or when MusicBrainz doesn't know - which barely happens)
+
+  ![Manual positioning](./doc/manual_editing_position.jpg "Manual positioning")
+
+- ProjectM Milkdrop vizualisation in focus mode to enjoy animations (still WIP)
+
+  ![ProjectM focus Mode](./doc/projectM_focus.jpg "ProjectM focus Mode")
+
+- ProjectM Milkdrop vizualisation in background mode to keep editing the playlist
+
+  ![ProjectM background Mode](./doc/projectM_background.jpg "ProjectM background Mode")
+
 
 A checksum is calculated based on music name, artist name and album name, to make the database resilient to filesystem changes.
-
- - metadata editor (db persistency) :
-   - In addition of reading music file metadata, you can fetch artist country via [musicbrainz](https://musicbrainz.org). If the match has a unique result with a score of 100, it will be saved automatically, otherwise you'll have to check and save.
 
 ## Setup
 
@@ -110,7 +125,8 @@ WIP Does not contains postgres + gdal binaries, nginx not included either. Will 
  - compile executable `services/backend > docker run --volume "%cd%:/src/" batonogov/pyinstaller-windows:latest`
  - copy `./services/backend/dist/*.exe` in `./services/frontend/src-tauri/binaries`
  - rename the executable as `*-x86_64-pc-windows-msvc.exe`
- - then `services/frontend > npm run tauri build`
+ - then `services/frontend > npm run tauri build` 
+ - executable will be in `services/frontend/src-tauri/target/release`. It works well with the backend launched in docker environment
 
 # Thanks
 

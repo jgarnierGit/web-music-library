@@ -32,22 +32,6 @@
                             <v-card-text>
                                 {{ artist.country_name }}
                             </v-card-text>
-                            <v-card-actions>
-
-                                <v-tooltip location="top" origin="auto" :text="tooltipMapEditor(artist.id)">
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn v-bind="props" color="medium-emphasis" :icon="mapEditionIcon(artist.id)"
-                                            size="small" @click="switchEdition(artist)"></v-btn>
-                                    </template>
-                                </v-tooltip>
-                                <v-tooltip v-if="editionId === artist.id" location="top" origin="auto"
-                                    text="Cancel edition">
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn v-bind="props" color="error medium-emphasis" :icon="mdiContentSaveOff"
-                                            size="small" @click="cancelEdition(artist.id)"></v-btn>
-                                    </template>
-                                </v-tooltip>
-                            </v-card-actions>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -57,48 +41,14 @@
 </template>
 
 <script setup lang="ts">
-import { mdiCloseCircle, mdiContentSaveEdit, mdiContentSaveOff, mdiMapMarker } from '@mdi/js';
-import { PLAYLIST_TYPES, SNACKBAR_TIMEOUT } from '~/commons/constants';
-import type { Artist, ArtistMapEditorContext, GeomData } from '~/commons/interfaces';
-import { getAPI, putAPI, writeErrorLogs } from '~/commons/restAPI';
+import { mdiCloseCircle } from '@mdi/js';
+import { PLAYLIST_TYPES } from '~/commons/constants';
+import type { Artist } from '~/commons/interfaces';
+import { getAPI } from '~/commons/restAPI';
 import ArtistToolbar from './ArtistToolbar.vue';
 import { createGeomData } from '~/commons/utils';
-const snackbarStore = useSnackbarStore();
 const mapStore = useSpatialMapStore();
-const { editionId } = storeToRefs(mapStore);
 const { pending: dataPending, data: artistsData, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
-
-const mapEditionIcon = computed(() => (id: string) => editionId.value === id ? mdiContentSaveEdit : mdiMapMarker);
-const tooltipMapEditor = computed(() => (id: string) => editionId.value === id ? "Save edition" : "Edit artist location");
-
-
-
-async function switchEdition(artist: Artist) {
-    if (editionId.value === artist.id) {
-        mapStore.closeEditionId(artist.id);
-        try {
-            await putAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
-            mapStore.updateLayerData(createGeomData([artist]));
-        } catch (err) {
-            snackbarStore.setContent(`Error while loading saving artist ${artist.name}, check the logs`, SNACKBAR_TIMEOUT, "error");
-            writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
-        }
-    }
-    else {
-        const editionContext = {} as ArtistMapEditorContext;
-        editionContext.artist = artist;
-        //TODO can be better typed using geomData
-        editionContext.callback = (payload: { countryName: string, geom: any }) => {
-            editionContext.artist.country_name = payload.countryName;
-            editionContext.artist.geom = payload.geom;
-        }
-        mapStore.openEditionForId(artist.id, editionContext);
-    }
-}
-
-function cancelEdition(id: string) {
-    mapStore.closeEditionId(id);
-}
 
 async function loadArtists() {
     const res = await getAPI(`/api/artist/list`, 'loading artists list');

@@ -3,7 +3,7 @@
     <ArtistToolbar />
     <v-container fluid v-if="dataPending">
       <v-row dense justify="start">
-        <v-col v-for="n in 3">
+        <v-col cols="12" v-for="n in 3">
           <v-skeleton-loader type="list-item"></v-skeleton-loader>
         </v-col>
       </v-row>
@@ -23,19 +23,7 @@
           </template>
 
           <template v-slot:append>
-            <div v-if="!hasCountryGuessPending(artist.id)">
-              <v-tooltip location="top" origin="auto" text="Find location">
-                <template v-slot:activator="{ props }">
-                  <v-btn v-bind="props" :icon="mdiMagnify" size="x-small" variant="tonal" @click="locate(artist)" />
-                </template>
-              </v-tooltip>
-              <v-tooltip location="top" origin="auto" text="Edit on map">
-                <template v-slot:activator="{ props }">
-                  <v-btn v-bind="props" :icon="mdiPencil" size="x-small" variant="tonal"></v-btn>
-                </template>
-              </v-tooltip>
-            </div>
-            <div v-else>
+            <div v-if="hasCountryGuessPending(artist.id)">
               <div v-if="hasArtistManyCountries(artist.id)">
                 {{ artistCountryContent(artist.id)[0] ?? 'NO DATA' }}
                 <v-btn-toggle divided density="compact" variant="outlined">
@@ -49,14 +37,14 @@
                       <v-card max-height="40vh" class="overflow-y-auto " max-width="20vw" min-width="15vw">
                         <v-list :items="artistCountryContent(artist.id)">
                           <v-list-item v-for="country in artistCountryContent(artist.id) ">
-                            <LocationValidator :countryName="country" :artist="artist" @save="saveLocation"
-                              @cancel="cancelLocation" />
+                            <LocationValidatorListItem :countryName="country" :artist="artist"
+                              @save="saveGuessingLocation" @cancel="cancelGuessingLocation" />
                           </v-list-item>
                         </v-list>
                       </v-card>
                     </v-overlay>
                   </v-btn>
-                  <v-btn size="x-small" color="error" @click="cancelLocation(artist)">
+                  <v-btn size="x-small" color="error" @click="cancelGuessingLocation(artist)">
                     <v-icon end color="error">
                       {{ mdiContentSaveOff }}
                     </v-icon>
@@ -64,22 +52,27 @@
                 </v-btn-toggle>
               </div>
               <div v-else>
-                {{ artistCountryContent(artist.id)[0] ?? 'NO DATA' }}
-                <v-btn-toggle divided density="compact" variant="outlined">
-                  <v-btn size="x-small" color="success"
-                    @click="saveLocation(artist, artistCountryContent(artist.id)[0])"
-                    :disabled="!artistCountryContent(artist.id)[0]">
-                    <v-icon end color="success">
-                      {{ mdiContentSaveEdit }}
-                    </v-icon>
-                  </v-btn>
-                  <v-btn size="x-small" color="error" @click="cancelLocation(artist)">
-                    <v-icon end color="error">
-                      {{ mdiContentSaveOff }}
-                    </v-icon>
-                  </v-btn>
-                </v-btn-toggle>
+                <LocationValidatorItem :countryName="artistCountryContent(artist.id)[0]" :artist="artist"
+                  @save="saveGuessingLocation" @cancel="cancelGuessingLocation" />
               </div>
+            </div>
+            <div v-else-if="editionId === artist.id">
+              <LocationValidatorItem :countryName="editionContext.artist.country_name" :artist="artist"
+                @save="switchEdition" @cancel="cancelEdition" />
+            </div>
+            <!-- no edition or guessing-->
+            <div v-else>
+              <v-tooltip location="top" origin="auto" text="Find location">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" :icon="mdiWeb" size="x-small" variant="tonal" @click="locate(artist)" />
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" origin="auto" text="Edit on map">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" :icon="mdiPencil" size="x-small" variant="tonal"
+                    @click="switchEdition(artist)"></v-btn>
+                </template>
+              </v-tooltip>
             </div>
           </template>
         </v-list-item>
@@ -89,25 +82,31 @@
 </template>
 
 <script setup lang="ts">
-import { mdiAccount, mdiCloseCircle, mdiContentSaveEdit, mdiContentSaveOff, mdiMagnify, mdiOpenInNew, mdiPencil } from '@mdi/js';
+import { mdiAccount, mdiCloseCircle, mdiContentSaveOff, mdiOpenInNew, mdiPencil, mdiWeb } from '@mdi/js';
 import { getAPI, putAPI, writeErrorLogs } from '~/commons/restAPI';
 import ArtistToolbar from './ArtistToolbar.vue';
-import type { Artist } from '~/commons/interfaces';
-import LocationValidator from './LocationValidator.vue';
+import type { Artist, ArtistMapEditorContext } from '~/commons/interfaces';
 import { createGeomData } from '~/commons/utils';
+import { SNACKBAR_TIMEOUT } from '~/commons/constants';
+import LocationValidatorListItem from './LocationValidatorListItem.vue';
+import LocationValidatorItem from './LocationValidatorItem.vue';
 
 const mapStore = useSpatialMapStore();
 const geolocalizerStore = useGeolocalizerStore();
+const snackbarStore = useSnackbarStore();
 const { mappingRefCountries } = storeToRefs(geolocalizerStore);
+const { editionId } = storeToRefs(mapStore);
 const { pending: dataPending, data: artistsData, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
 const hasCountryGuessPending = computed(() => (artistId: string) => !!guessCountry.value[artistId]);
 const hasArtistManyCountries = computed(() => (artistId: string) => guessCountry.value[artistId].length > 1);
 const artistCountryContent = computed(() => (artistId: string) => guessCountry.value ? guessCountry.value[artistId] : "");
+
 const guessCountry = ref({} as any);
 const overlay = ref(false);
+const editionContext = ref({} as ArtistMapEditorContext);
 
 async function loadArtists() {
-  const res = await getAPI(`/api/artist/list`, 'loading artists list');
+  const res = await getAPI(`/api/artist/list?limit=15`, 'loading artists list');
   if (!res) {
     return;
   }
@@ -142,7 +141,7 @@ async function locate(artist: Artist) {
   guessCountry.value[artistId] = labels;
 }
 
-async function saveLocation(artist: Artist, countryName: string) {
+async function saveGuessingLocation(artist: Artist, countryName: string) {
   if (!guessCountry.value[artist.id]) {
     return;
   }
@@ -156,11 +155,43 @@ async function saveLocation(artist: Artist, countryName: string) {
   overlay.value = false;
 }
 
-function cancelLocation(artist: Artist) {
+function cancelGuessingLocation(artist: Artist) {
   if (!guessCountry.value[artist.id]) {
     return;
   }
   delete guessCountry.value[artist.id];
+}
+
+async function switchEdition(artist: Artist) {
+  if (editionId.value === artist.id) {
+    mapStore.closeEditionId(artist.id);
+    try {
+      artist.country_name = editionContext.value.artist.country_name;
+      artist.geom = editionContext.value.artist.geom;
+      await putAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
+      mapStore.updateLayerData(createGeomData([artist]));
+    } catch (err) {
+      snackbarStore.setContent(`Error while loading saving artist ${artist.name}, check the logs`, SNACKBAR_TIMEOUT, "error");
+      writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
+    }
+    return;
+  }
+  else if (editionId.value) {
+    mapStore.closeEditionId(editionId.value);
+  }
+  // opening edition for current artist
+
+  editionContext.value.artist = {} as Artist;
+  //TODO can be better typed using geomData
+  editionContext.value.callback = (payload: { countryName: string, geom: any }) => {
+    editionContext.value.artist.country_name = payload.countryName;
+    editionContext.value.artist.geom = payload.geom;
+  }
+  mapStore.openEditionForId(artist.id, editionContext.value);
+}
+
+function cancelEdition(artist: Artist) {
+  mapStore.closeEditionId(artist.id);
 }
 
 </script>

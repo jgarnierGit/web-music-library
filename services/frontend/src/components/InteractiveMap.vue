@@ -45,8 +45,10 @@ watch(editionId, (newVal) => {
         if (geomLayerData.value) {
             createReadMarkers(geomLayerData.value);
         }
-        editionMarker.value.remove();
-        editionMarker.value = undefined;
+        if (editionMarker.value) {
+            editionMarker.value.remove();
+            editionMarker.value = undefined;
+        }
     }
     else {
         readMarkers.value.remove();
