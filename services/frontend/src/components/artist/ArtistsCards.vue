@@ -105,7 +105,7 @@ async function loadArtists() {
     if (!res) {
         return;
     }
-    mapStore.addLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
+    mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
     return res;
 }
 

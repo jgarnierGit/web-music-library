@@ -10,7 +10,6 @@ APP_NAME = os.environ.get("APP_NAME")
 
 
 def configure_musicbrainz():
-    print(f"MAIL={MAIL}")
     if not MAIL or MAIL.strip() == "":
         raise ValueError("API header mail is required")
 

@@ -12,5 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import InteractiveMap from '~/components/InteractiveMap.vue';
 import ArtistsGeolocalizer from '~/components/artist/ArtistsGeolocalizer.vue';
+
 </script>

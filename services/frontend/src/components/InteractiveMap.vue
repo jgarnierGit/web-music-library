@@ -18,22 +18,17 @@
 import 'leaflet/dist/leaflet.css';
 import shp from 'shpjs';
 import * as turf from '@turf/turf';
-import { onMounted, ref } from 'vue'
 import L from 'leaflet';
 import "leaflet.markercluster";
-import { useSpatialMapStore } from '../stores/spatialmap';
 import type { GeomData } from '~/commons/interfaces';
-import { FRONT_PUBLIC_URL, PLAYLIST_TYPES } from '~/commons/constants';
+import { COUNTRY_FIELD_NAME, FRONT_PUBLIC_URL, PLAYLIST_TYPES } from '~/commons/constants';
 import { writeErrorLogs } from '~/commons/restAPI';
 
-const FIELD_NAME = "NAME";
-
 const countriesLayerBuffers = await useAsyncData('countries', () => loadCountries());
-const countriesLayer = ref();
-const activeCountryPopup = ref();
+const activeCountryPopup = ref("");
 const mapStore = useSpatialMapStore();
 const playlist = usePlaylistStore();
-const { editionId, editorContext, geomLayerData } = storeToRefs(mapStore);
+const { editionId, editorContext, geomLayerData, countriesLayer } = storeToRefs(mapStore);
 const mapPlayerButton = ref();
 const layersCountValues = ref();
 const clusterPopupPlayer = ref();
@@ -64,10 +59,7 @@ watch(geomLayerData, (newVal, oldVal) => {
             all[value.name] = (all[value.name] ?? 0) + 1;
             return all;
         }, {});
-        countriesLayer.value.eachLayer((layer: any) => {
-            const countData = layersCountValues.value[layer.feature.properties[FIELD_NAME]];
-            layer.feature.domainData = { relatedData: countData ?? 0 }
-        })
+
         createReadMarkers(newVal);
     }
 })
@@ -111,7 +103,7 @@ function createReadMarkers(data: GeomData[]) {
 }
 
 function setActiveCountry(a: any) {
-    const activeCountries = activeReadCountries.value.map((layer) => layer.feature.properties[FIELD_NAME]);
+    const activeCountries = activeReadCountries.value.map((layer) => layer.feature.properties[COUNTRY_FIELD_NAME]);
     if (activeCountries.length === 1) {
         activeCountryPopup.value = activeCountries[0]
     } else {
@@ -142,7 +134,8 @@ function hilightCoutriesReaderCluster(a: any) {
             coords.push(coords[0]);
             const turfPolygon = turf.polygon([coords]);
             countriesLayer.value.eachLayer(function (layer: any) {
-                if (layer.feature.domainData && layer.feature.domainData.relatedData > 0 && turf.booleanIntersects(turfPolygon, layer.feature)) {
+                const countData = layersCountValues.value[layer.feature.properties[COUNTRY_FIELD_NAME]] ?? 0;
+                if (countData > 0 && turf.booleanIntersects(turfPolygon, layer.feature)) {
                     activeReadCountries.value.push(layer)
                     layer.setStyle(style.hilight);
                 }
@@ -155,9 +148,9 @@ function hilightCountryFromReadMarker(a: any) {
     if (!!a.layer._spiderLeg) {
         // if is the current cluster being spiderfied, then get root latLng
         const latlngOrigin = a.target._spiderfied.getLatLng();
-        var point = turf.point([latlngOrigin.lng, latlngOrigin.lat]);
+        const p = turf.point([latlngOrigin.lng, latlngOrigin.lat]);
         countriesLayer.value.eachLayer(function (layer: any) {
-            const isIntersecting = turf.booleanPointInPolygon(point, layer.feature);
+            const isIntersecting = turf.booleanPointInPolygon(p, layer.feature);
             if (isIntersecting) {
                 activeReadCountries.value.push(layer)
                 layer.setStyle(style.hilight);
@@ -165,13 +158,13 @@ function hilightCountryFromReadMarker(a: any) {
         });
     }
     else {
-        var point = turf.point([a.latlng.lng, a.latlng.lat]);
+        const p = turf.point([a.latlng.lng, a.latlng.lat]);
         countriesLayer.value.eachLayer(function (layer: any) {
-            const isIntersecting = turf.booleanPointInPolygon(point, layer.feature);
+            const isIntersecting = turf.booleanPointInPolygon(p, layer.feature);
             if (isIntersecting) {
                 activeReadCountries.value.push(layer)
                 layer.setStyle(style.hilight);
-                const targetedArtists = geomLayerData.value?.filter((geomData: GeomData) => geomData.name === layer.feature.properties[FIELD_NAME]);
+                const targetedArtists = geomLayerData.value?.filter((geomData: GeomData) => geomData.name === layer.feature.properties[COUNTRY_FIELD_NAME]);
                 if (!targetedArtists) {
                     return
                 }
@@ -224,6 +217,7 @@ async function loadCountries() {
 }
 
 async function createCountriesLayer() {
+    // for some reason I can't make it work with destructuration and a watcher...
     if (countriesLayerBuffers.status.value === "error") {
         console.error(countriesLayerBuffers.error.value)
         return
@@ -242,10 +236,11 @@ async function createCountriesLayer() {
         console.error("no map instanciated");
         return;
     }
-    countriesLayer.value = L.geoJSON(res, {
+    const cLayer = L.geoJSON(res, {
         style: style.default,
         onEachFeature: onEachFeature
     }).addTo(leafletMap.value);
+    mapStore.setCountriesLayer(cLayer);
 }
 
 function onEachFeature(feature: any, layer: any) {
@@ -277,12 +272,12 @@ function highlightFeature(e: any) {
     if (!!editionId.value) {
         countryTooltip.value = L.tooltip()
             .setLatLng(e.latlng)
-            .setContent(e.target.feature.properties[FIELD_NAME])
+            .setContent(e.target.feature.properties[COUNTRY_FIELD_NAME])
             .addTo(leafletMap.value);
-    } else if (!editionId.value && layersCountValues.value && layersCountValues.value[e.target.feature.properties[FIELD_NAME]]) {
+    } else if (!editionId.value && layersCountValues.value && layersCountValues.value[e.target.feature.properties[COUNTRY_FIELD_NAME]]) {
         countryTooltip.value = L.tooltip()
             .setLatLng(e.latlng)
-            .setContent(`Play from ${e.target.feature.properties[FIELD_NAME]}`)
+            .setContent(`Play from ${e.target.feature.properties[COUNTRY_FIELD_NAME]}`)
             .addTo(leafletMap.value);
     }
 }
@@ -296,7 +291,7 @@ function resetHighlight(e: any) {
 
 async function pickCountry(event: any) {
     if (!editionId.value) {
-        await playlist.setFilter(PLAYLIST_TYPES.COUNTRY, [event.target.feature.properties[FIELD_NAME]]);
+        await playlist.setFilter(PLAYLIST_TYPES.COUNTRY, [event.target.feature.properties[COUNTRY_FIELD_NAME]]);
         playlist.playNextSong();
         return;
     }
@@ -334,8 +329,8 @@ function updateEditionMarker(event: any) {
     if (!pickedPolygon) {
         return;
     }
-    const centroid = turf.centerOfMass(pickedPolygon.toGeoJSON());
-    const countryName = event.target.feature.properties[FIELD_NAME];
+    const centroid = turf.centerOfMass(pickedPolygon.toGeoJSON())
+    const countryName = event.target.feature.properties[COUNTRY_FIELD_NAME];
     const centroidLatLong = new L.LatLng(centroid.geometry.coordinates[0], centroid.geometry.coordinates[1]);
     if (!editionMarker.value) {
         editionMarker.value = L.marker(centroidLatLong, { title: countryName });

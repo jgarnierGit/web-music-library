@@ -3,7 +3,7 @@
     <ArtistToolbar />
     <v-container fluid v-if="dataPending">
       <v-row dense justify="start">
-        <v-col cols="3" v-for="n in 3">
+        <v-col v-for="n in 3">
           <v-skeleton-loader type="list-item"></v-skeleton-loader>
         </v-col>
       </v-row>
@@ -17,7 +17,7 @@
     </v-container>
     <v-infinite-scroll v-else height="80vh" item-height="48" :items="artistsData.artists" @load="load">
       <template v-for="(artist, index) in artistsData.artists" :key="artist.id">
-        <v-list-item :subtitle="`${artist.country_name}`" :title="`${artist.name}`">
+        <v-list-item :subtitle="`${artist.country_name ?? 'NO DATA'}`" :title="`${artist.name}`">
           <template v-slot:prepend>
             <v-icon>{{ mdiAccount }}</v-icon>
           </template>
@@ -37,27 +37,48 @@
             </div>
             <div v-else>
               <div v-if="hasArtistManyCountries(artist.id)">
-                {{ artistCountryContent(artist.id)[0] }}
-                <v-btn size="x-small" variant="tonal">
-                  (+{{ artistCountryContent(artist.id).length - 1 }} more...)
-                  <v-icon color="warning" end>
-                    {{ mdiOpenInNew }}
-                  </v-icon>
-                  <v-overlay activator="parent" location-strategy="connected" scroll-strategy="close">
-                    <v-card>
-                      <v-list>
-                        <v-list-item v-for="country in artistCountryContent(artist.id) ">
-                          <LocationValidator :countryName="country" :artist="artist" @save="saveLocation"
-                            @cancel="cancelLocation" />
-                        </v-list-item>
-                      </v-list>
-                    </v-card>
-                  </v-overlay>
-                </v-btn>
+                {{ artistCountryContent(artist.id)[0] ?? 'NO DATA' }}
+                <v-btn-toggle divided density="compact" variant="outlined">
+                  <v-btn size="x-small" variant="tonal">
+                    (+{{ artistCountryContent(artist.id).length - 1 }} more...)
+                    <v-icon color="warning" end>
+                      {{ mdiOpenInNew }}
+                    </v-icon>
+                    <v-overlay activator="parent" location-strategy="connected" scroll-strategy="close"
+                      v-model="overlay">
+                      <v-card max-height="40vh" class="overflow-y-auto " max-width="20vw" min-width="15vw">
+                        <v-list :items="artistCountryContent(artist.id)">
+                          <v-list-item v-for="country in artistCountryContent(artist.id) ">
+                            <LocationValidator :countryName="country" :artist="artist" @save="saveLocation"
+                              @cancel="cancelLocation" />
+                          </v-list-item>
+                        </v-list>
+                      </v-card>
+                    </v-overlay>
+                  </v-btn>
+                  <v-btn size="x-small" color="error" @click="cancelLocation(artist)">
+                    <v-icon end color="error">
+                      {{ mdiContentSaveOff }}
+                    </v-icon>
+                  </v-btn>
+                </v-btn-toggle>
               </div>
               <div v-else>
-                <LocationValidator :countryName="artistCountryContent(artist.id)[0]" :artist="artist"
-                  @save="saveLocation" @cancel="cancelLocation" />
+                {{ artistCountryContent(artist.id)[0] ?? 'NO DATA' }}
+                <v-btn-toggle divided density="compact" variant="outlined">
+                  <v-btn size="x-small" color="success"
+                    @click="saveLocation(artist, artistCountryContent(artist.id)[0])"
+                    :disabled="!artistCountryContent(artist.id)[0]">
+                    <v-icon end color="success">
+                      {{ mdiContentSaveEdit }}
+                    </v-icon>
+                  </v-btn>
+                  <v-btn size="x-small" color="error" @click="cancelLocation(artist)">
+                    <v-icon end color="error">
+                      {{ mdiContentSaveOff }}
+                    </v-icon>
+                  </v-btn>
+                </v-btn-toggle>
               </div>
             </div>
           </template>
@@ -68,12 +89,13 @@
 </template>
 
 <script setup lang="ts">
-import { mdiAccount, mdiCloseCircle, mdiMagnify, mdiOpenInNew, mdiPencil } from '@mdi/js';
+import { mdiAccount, mdiCloseCircle, mdiContentSaveEdit, mdiContentSaveOff, mdiMagnify, mdiOpenInNew, mdiPencil } from '@mdi/js';
 import { getAPI, putAPI, writeErrorLogs } from '~/commons/restAPI';
 import ArtistToolbar from './ArtistToolbar.vue';
 import type { Artist } from '~/commons/interfaces';
 import LocationValidator from './LocationValidator.vue';
 import { createGeomData } from '~/commons/utils';
+
 const mapStore = useSpatialMapStore();
 const geolocalizerStore = useGeolocalizerStore();
 const { mappingRefCountries } = storeToRefs(geolocalizerStore);
@@ -82,13 +104,14 @@ const hasCountryGuessPending = computed(() => (artistId: string) => !!guessCount
 const hasArtistManyCountries = computed(() => (artistId: string) => guessCountry.value[artistId].length > 1);
 const artistCountryContent = computed(() => (artistId: string) => guessCountry.value ? guessCountry.value[artistId] : "");
 const guessCountry = ref({} as any);
+const overlay = ref(false);
 
 async function loadArtists() {
   const res = await getAPI(`/api/artist/list`, 'loading artists list');
   if (!res) {
     return;
   }
-  mapStore.addLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
+  mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
   return res;
 }
 
@@ -107,7 +130,6 @@ async function load({ done }) {
 
 async function locate(artist: Artist) {
   const res: any = await getAPI(`/api/artist/${artist.name}/getCountry`, `Getting country from artist ${artist.name}`)
-  console.log(res);
   const artistId = artist.id;
   const labels = res.result.flatMap((val: string) => {
     //@ts-ignore
@@ -115,24 +137,26 @@ async function locate(artist: Artist) {
     if (!label) {
       writeErrorLogs(`unknown key country for ${val}`)
     }
+    return label;
   });
-  console.log(labels);
-
-  // TODO mappingCountriesRef.value = mapping; // compute mapping here
-  guessCountry.value[artistId] = res.result;
-  console.log(guessCountry.value);
+  guessCountry.value[artistId] = labels;
 }
 
 async function saveLocation(artist: Artist, countryName: string) {
   if (!guessCountry.value[artist.id]) {
     return;
   }
+
   artist.country_name = countryName;
+  const geom = mapStore.getGeomFromLabel(countryName);
+  artist.geom = geom;
+  mapStore.updateLayerData(createGeomData([artist]));
   await putAPI(`/api/artist/${artist.id}`, 'saving artist geolocalizer', artist);
   delete guessCountry.value[artist.id];
+  overlay.value = false;
 }
 
-function cancelLocation(artist: Artist, countryName: string) {
+function cancelLocation(artist: Artist) {
   if (!guessCountry.value[artist.id]) {
     return;
   }

@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
+import { COUNTRY_FIELD_NAME } from "~/commons/constants";
 import type { ArtistMapEditorContext, GeomData } from "~/commons/interfaces";
+import * as turf from '@turf/turf';
+import L from 'leaflet';
 
 export const useSpatialMapStore = defineStore('spatialMap', () => {
     const editionId = ref<string>();
     const editorContext = ref<ArtistMapEditorContext>();
-
+    const countriesLayer = ref();
     const geomLayerData = ref<GeomData[]>()
 
     function openEditionForId(id: string, context: ArtistMapEditorContext) {
@@ -20,10 +23,6 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         editionId.value = undefined;
     }
 
-    function addLayerData(data: GeomData[]) {
-        geomLayerData.value = data;
-    }
-
     function updateLayerData(data: GeomData[]) {
         if (!geomLayerData.value) {
             geomLayerData.value = data;
@@ -32,13 +31,12 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         const valuesToPush: GeomData[] = [];
         data.forEach((geomData: GeomData) => {
             //@ts-ignore
-            const existingData = geomLayerData.value.find((g) => g.id === geomData.id);
-            if (existingData) {
-                existingData.geom = geomData.geom;
+            const existingDataId = geomLayerData.value.findIndex((g) => g.id === geomData.id);
+            if (existingDataId !== -1) {
+                // must remove and reinsert to trigger cluster updates
+                geomLayerData.value?.splice(existingDataId, 1);
             }
-            else {
-                valuesToPush.push(geomData);
-            }
+            valuesToPush.push(geomData);
         })
         if (valuesToPush.length > 0) {
             const newArray = geomLayerData.value.concat(valuesToPush)
@@ -46,5 +44,22 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         }
     }
 
-    return { editionId, editorContext, geomLayerData, openEditionForId, closeEditionId, addLayerData, updateLayerData };
+    function setCountriesLayer(countryLayer: L.GeoJSON) {
+        countriesLayer.value = countryLayer;
+    }
+
+    function getGeomFromLabel(countryName: string) {
+        let geom;
+        countriesLayer.value.eachLayer((layer: any) => {
+            if (countryName === layer.feature.properties[COUNTRY_FIELD_NAME]) {
+                const pickedPolygon: L.Polygon<any> = L.polygon(layer.feature.geometry.coordinates);
+                geom = turf.centerOfMass(pickedPolygon.toGeoJSON());
+                geom = geom.geometry;
+                return
+            }
+        });
+        return geom;
+    }
+
+    return { editionId, editorContext, geomLayerData, countriesLayer, openEditionForId, closeEditionId, updateLayerData, getGeomFromLabel, setCountriesLayer };
 });
