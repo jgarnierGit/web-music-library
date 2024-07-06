@@ -9,16 +9,16 @@ import { mdiFastForward, mdiPlay } from '@mdi/js';
 const playlist = usePlaylistStore();
 const { filter } = storeToRefs(playlist);
 const props = defineProps<{
-    type: string, value: string
+    type: string, value: string[]
 }>();
-const isFilterActive = computed(() => filter.value?.targetIds.includes(props.value));
+const isFilterActive = computed(() => filter.value?.targetIds === props.value);
 
 function setFilter() {
-    playlist.setFilter(props.type, [props.value]);
+    playlist.setFilter(props.type, props.value);
 }
 
 async function playFilter() {
-    await playlist.setFilter(props.type, [props.value]);
+    await playlist.setFilter(props.type, props.value);
     playlist.playNextSong();
 }
 

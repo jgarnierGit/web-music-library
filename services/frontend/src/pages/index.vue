@@ -1,31 +1,20 @@
 <template>
   <v-row>
     <v-col>
-      <v-row>
-        <v-col>
-          <v-sheet rounded="lg">
-            <MusicTree />
-          </v-sheet>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-sheet rounded="lg">
-            <ArtistsCards />
-          </v-sheet>
-        </v-col>
-      </v-row>
+      <v-sheet rounded="lg">
+        <MusicTree />
+      </v-sheet>
     </v-col>
-    <v-col cols="7" class="opacity-100">
-      <InteractiveMap />
+  </v-row>
+  <v-row>
+    <v-col>
+      <v-sheet rounded="lg">
+        <ArtistsCards />
+      </v-sheet>
     </v-col>
-
   </v-row>
 </template>
 <script setup lang="ts">
 import ArtistsCards from '~/components/artist/ArtistsCards.vue';
 import MusicTree from '~/components/filesystem/MusicTree.vue';
-import InteractiveMap from '~/components/InteractiveMap.vue';
-
-
 </script>

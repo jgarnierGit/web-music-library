@@ -6,7 +6,9 @@
             <div id="musicMap" class="mapContainer">
             </div>
             <div ref="mapPlayerButton">
-                Play from {{ activeCountryPopup }}
+                Play from
+                <v-divider></v-divider>
+                <span v-for="country in activeCountryPopup">{{ country }}<br /></span>
                 <PlaylistActions :type="PLAYLIST_TYPES.COUNTRY" :value="activeCountryPopup" />
             </div>
         </v-sheet>
@@ -24,7 +26,7 @@ import { getAPI, writeErrorLogs, writeInfoLogs } from '~/commons/restAPI';
 import PlaylistActions from './PlaylistActions.vue';
 import { createGeomData } from '~/commons/utils';
 
-const activeCountryPopup = ref("");
+const activeCountryPopup = ref<string[]>([]);
 const countLoadedData = ref(0);
 const mapStore = useSpatialMapStore();
 const playlist = usePlaylistStore();
@@ -146,8 +148,9 @@ function createReadMarkers(data: GeomData[]) {
 function setActiveCountry(a: any) {
     const activeCountries = activeReadCountries.value.map((layer) => layer.feature.properties[COUNTRY_FIELD_NAME]);
     if (activeCountries.length === 1) {
-        activeCountryPopup.value = activeCountries[0]
+        activeCountryPopup.value = activeCountries
     } else {
+        activeCountryPopup.value = activeCountries
         writeErrorLogs("multi countries filtering not handled yet");
     }
 }

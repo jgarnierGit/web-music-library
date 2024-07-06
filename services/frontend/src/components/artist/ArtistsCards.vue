@@ -26,7 +26,7 @@
                                 <v-toolbar color="transparent">
 
                                     <template v-slot:append>
-                                        <PlaylistActions :type="PLAYLIST_TYPES.ARTIST" :value="artist.id" />
+                                        <PlaylistActions :type="PLAYLIST_TYPES.ARTIST" :value="[artist.id]" />
                                     </template>
                                 </v-toolbar>
                             </v-img>

@@ -5,7 +5,7 @@
                 v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
                 <template v-slot:prepend>
                     <v-icon v-if="!hoveringFolder">{{ folderIcon(musicFolder, isOpen) }}</v-icon>
-                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
+                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="[musicFolder.path]" />
                 </template>
 
             </v-list-item>
@@ -14,7 +14,7 @@
                 v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
                 <template v-slot:prepend>
                     <v-icon v-if="!hoveringFolder">{{ mdiFolder }}</v-icon>
-                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
+                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="[musicFolder.path]" />
                 </template>
 
             </v-list-item>

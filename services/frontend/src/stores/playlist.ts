@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { Music } from "~/commons/interfaces";
-import { postAPI, writeInfoLogs } from "~/commons/restAPI";
+import { postAPI } from "~/commons/restAPI";
 
 export const usePlaylistStore = defineStore('playlist', () => {
     const currentPlaying = ref<Music>();
