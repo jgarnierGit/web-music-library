@@ -1,16 +1,12 @@
 import os
 from django.http import JsonResponse
-from ..models import Music, Artist, Album, Genre, MusicSerializer
-from uuid import uuid4
-from .filesystem.utils import get_metadata
+from ..models import Music, MusicSerializer
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 import json
-from mutagen import MutagenError
-from django.db import Error
-
-MUSIC_PATH = "/music"
-# Audio file extensions
-AUDIO_EXTENSIONS = [".mp3", ".wav", ".ogg"]
+from ..tasks import parse_filesystem
+from ..consts import MUSIC_PATH, AUDIO_EXTENSIONS
+from ..services.filesystem import updateDb
 
 
 def get_tree(path, level):
@@ -66,41 +62,8 @@ class FolderView(APIView):
             return JsonResponse({"error": str(e)})
 
 
-def updateDb(music_name: str, music_path: str):
-    genre = None
-    artist = None
-    album = None
-    music_result = {"music": None}
-    try:
-        metadata = get_metadata(music_path)
-        if metadata.genre:
-            genre, created = Genre.objects.get_or_create(name=metadata.genre)
-        if metadata.artist:
-            artist, created = Artist.objects.get_or_create(name=metadata.artist)
-        if metadata.album:
-            temp_album = Album(
-                name=metadata.album,
-                artist=artist,
-                genre=genre,
-                date=metadata.album_release_date,
-            )
-            existing_albums = Album.objects.filter(name=metadata.album, artist=artist)
-            if not existing_albums:
-                temp_album.save()
-                album = temp_album
-            else:
-                album = existing_albums.first()
-        music = Music(name=music_name, path=music_path, artist=artist, album=album)
-        music.set_checksum()
-        existing_music = Music.objects.filter(checksum=music.checksum)
-        if not existing_music:
-            music.bpm = metadata.bpm
-            music.duration = metadata.track_duration
-            music.track = metadata.track_number
-            music.save()
-        music_result["music"] = Music.objects.filter(checksum=music.checksum).first()
-    except (MutagenError, Error, Exception) as err:
-        print(err)
-        music_result["music"] = Music(name=music_name, path=music_path)
-        music_result["error"] = str(err)
-    return music_result
+@api_view(["GET"])
+def refresh_library(request):
+    force = request.query_params.get("force", "False")
+    result = parse_filesystem.delay(force.lower() == "true")
+    return JsonResponse({"result": result.task_id})

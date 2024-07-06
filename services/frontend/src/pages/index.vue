@@ -24,8 +24,8 @@
 </template>
 <script setup lang="ts">
 import ArtistsCards from '~/components/artist/ArtistsCards.vue';
+import MusicTree from '~/components/filesystem/MusicTree.vue';
 import InteractiveMap from '~/components/InteractiveMap.vue';
-import MusicTree from '~/components/MusicTree.vue';
 
 
 </script>

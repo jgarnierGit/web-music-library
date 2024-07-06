@@ -5,7 +5,7 @@
                 v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
                 <template v-slot:prepend>
                     <v-icon v-if="!hoveringFolder">{{ folderIcon(musicFolder, isOpen) }}</v-icon>
-                    <playlist-actions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
+                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
                 </template>
 
             </v-list-item>
@@ -14,7 +14,7 @@
                 v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
                 <template v-slot:prepend>
                     <v-icon v-if="!hoveringFolder">{{ mdiFolder }}</v-icon>
-                    <playlist-actions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
+                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="musicFolder.path" />
                 </template>
 
             </v-list-item>
@@ -34,8 +34,6 @@
         <MusicTreeGroup v-for="(subFolder, i) in musicFolder.folders" v-model:node="musicFolder.folders[i]"
             :depth="depth + 1" />
     </v-list-group>
-    <!--  -->
-
 </template>
 
 <script setup lang="ts">
@@ -43,8 +41,10 @@ import { mdiCloseCircle, mdiFileMusicOutline, mdiFolder, mdiFolderOpen, mdiPlay 
 import { PLAYLIST_TYPES } from '~/commons/constants';
 import type { File, Folder, Music } from '~/commons/interfaces';
 import { postAPI } from '~/commons/restAPI';
+import PlaylistActions from '~/components/PlaylistActions.vue';
 import { usePlaylistStore } from '~/stores/playlist';
 const playlist = usePlaylistStore();
+const dbCacheStore = useDbCacheStore();
 
 const hoveringId = ref<string>();
 const hoveringFolder = ref(false);
@@ -74,6 +74,7 @@ async function loadFolderContent(subFolder: Folder) {
         }
         musicFolder.value.folders = getRes.folders;
         musicFolder.value.musics = getRes.musics;
+        dbCacheStore.updateCountFiles();
     } finally {
         loading.value = false;
     }

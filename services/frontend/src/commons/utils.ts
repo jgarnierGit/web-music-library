@@ -1,4 +1,4 @@
-import type { Artist, GeomData } from "./interfaces";
+import type { Artist, Folder, GeomData } from "./interfaces";
 
 function createGeomData(artists: Artist[]) {
     return artists.map((artist: Artist) => {
@@ -6,4 +6,12 @@ function createGeomData(artists: Artist[]) {
     })
 }
 
-export { createGeomData };
+function countRecursiveFileSystem(content: Folder, countFiles: number) {
+    countFiles += content.musics ? content.musics.length : 0;
+    for (const folder of content.folders) {
+        countFiles = countRecursiveFileSystem(folder, countFiles);
+    }
+    return countFiles;
+}
+
+export { createGeomData, countRecursiveFileSystem };

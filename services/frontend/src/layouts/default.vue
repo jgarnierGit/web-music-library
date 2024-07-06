@@ -7,12 +7,12 @@
             </v-container>
         </v-main>
         <v-footer app height="50" center class="background-over-milkdrop">
-            <v-row justify="center">
-                <v-col cols="4"></v-col>
-                <v-col cols="4">
+            <v-row justify="center" no-gutters align="center">
+                <v-spacer></v-spacer>
+                <v-col>
                     <MusicPlayer />
                 </v-col>
-                <v-col cols="4"></v-col>
+                <v-spacer></v-spacer>
             </v-row>
         </v-footer>
         <Milkdrop v-if="isVisible" />

@@ -1,36 +1,36 @@
 <template>
     <v-row justify="center">
-        <v-col>
-            <audio ref="audioPlayer" controls preload="auto" autoplay="true" crossOrigin="anonymous" loop
-                controlsList="nodownload" :src="audioPath" style="height:100%">
-                Your browser does not support the audio element.
-            </audio>
 
-        </v-col>
-        <v-col style="vertical-align: middle">
-            <v-tooltip location="top" origin="auto" :text="nextSongTooltip">
-                <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" :icon="mdiSkipNext" variant="text" @click="playNext()" />
-                </template>
-            </v-tooltip>
-        </v-col>
-        <v-col style="vertical-align: middle">
-            <v-tooltip location="top" origin="auto" text="Toggle Visualizer">
-                <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" :icon="viewerIcon" variant="text" @click="toggleViewer()" />
-                </template>
-            </v-tooltip>
-            <v-tooltip v-if="isVisible" location="top" origin="auto" text="Change preset">
-                <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" :icon=mdiSwapHorizontal variant="text" @click="loadMilkdropPreset()" />
-                </template>
-            </v-tooltip>
-            <v-tooltip v-if="isVisible" location="top" origin="auto" :text="focusTooltip">
-                <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" :icon="viewerIconMode" variant="text" @click="toggleViewerMode()" />
-                </template>
-            </v-tooltip>
-        </v-col>
+        <audio ref="audioPlayer" controls preload="auto" autoplay="true" crossOrigin="anonymous" loop
+            controlsList="nodownload" :src="audioPath" style="height:100%">
+            Your browser does not support the audio element.
+        </audio>
+
+
+        <v-tooltip location="top" origin="auto" :text="nextSongTooltip">
+            <template v-slot:activator="{ props }">
+                <div v-bind="props">
+                    <v-btn :icon="mdiSkipNext" variant="text" @click="playNext()" :disabled="!nextSong" />
+                </div>
+            </template>
+        </v-tooltip>
+        <v-divider vertical />
+        <v-tooltip location="top" origin="auto" text="Toggle Visualizer">
+            <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" :icon="viewerIcon" variant="text" @click="toggleViewer()" />
+            </template>
+        </v-tooltip>
+        <v-tooltip v-if="isVisible" location="top" origin="auto" text="Change preset">
+            <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" :icon=mdiSwapHorizontal variant="text" @click="loadMilkdropPreset()" />
+            </template>
+        </v-tooltip>
+        <v-tooltip v-if="isVisible" location="top" origin="auto" :text="focusTooltip">
+            <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" :icon="viewerIconMode" variant="text" @click="toggleViewerMode()" />
+            </template>
+        </v-tooltip>
+
     </v-row>
 
 </template>
@@ -53,7 +53,7 @@ const { isVisible, isFocused } = storeToRefs(projectM);
 const viewerIcon = computed(() => isVisible.value ? mdiMonitorOff : mdiMonitor)
 const viewerIconMode = computed(() => isFocused.value ? mdiFullscreenExit : mdiFullscreen)
 const focusTooltip = computed(() => isFocused.value ? "Background mode" : "Focus mode")
-const nextSongTooltip = computed(() => nextSong && nextSong.value ? `${nextSong.value.artist?.name} - ${nextSong.value.name}` : 'Play next song');
+const nextSongTooltip = computed(() => nextSong && nextSong.value ? `${nextSong.value.artist?.name} - ${nextSong.value.name}` : 'Fetching next song...');
 
 onMounted(() => {
     audioPlayer.value.onerror = function (err: any) {

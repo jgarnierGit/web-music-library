@@ -3,10 +3,14 @@ FROM python:3.12
 # don't bufferize python logs
 ENV PYTHONUNBUFFERED 1
 
+ENV PYTHONPATH=$PYTHONPATH:/app/backend-django
+
 WORKDIR /app
 
 # Install GDAL
 RUN apt-get update && apt-get install -y binutils libproj-dev gdal-bin
+
+RUN apt-get install redis -y
 
 COPY ./requirements.txt /app/requirements.txt
 COPY ./requirements_dev.txt /app/requirements_dev.txt

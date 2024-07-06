@@ -1,6 +1,7 @@
 <template>
     <v-card>
-        <ArtistToolbar />
+        <NavigatorToolbar title="Artists" :countLoaded="countLoadedArtists" :countRefreshCallback="refreshCountArtists"
+            :autoRefresh="true" />
         <v-container fluid v-if="dataPending">
             <v-row dense justify="start">
                 <v-col cols="3" v-for="n in 3">
@@ -25,7 +26,7 @@
                                 <v-toolbar color="transparent">
                                     <v-toolbar-title class="text-white" v-text="artist.name"></v-toolbar-title>
                                     <template v-slot:append>
-                                        <playlist-actions :type="PLAYLIST_TYPES.ARTIST" :value="artist.id" />
+                                        <PlaylistActions :type="PLAYLIST_TYPES.ARTIST" :value="artist.id" />
                                     </template>
                                 </v-toolbar>
                             </v-img>
@@ -44,18 +45,27 @@
 import { mdiCloseCircle } from '@mdi/js';
 import { PLAYLIST_TYPES } from '~/commons/constants';
 import type { Artist } from '~/commons/interfaces';
-import { getAPI } from '~/commons/restAPI';
-import ArtistToolbar from './ArtistToolbar.vue';
+import { getAPI, writeInfoLogs } from '~/commons/restAPI';
 import { createGeomData } from '~/commons/utils';
+import PlaylistActions from '~/components/PlaylistActions.vue';
+import NavigatorToolbar from '~/components/NavigatorToolbar.vue';
 const mapStore = useSpatialMapStore();
-const { pending: dataPending, data: artistsData, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
+const dbCacheStore = useDbCacheStore();
+const { artistsData } = storeToRefs(dbCacheStore);
+const { pending: dataPending, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
+const countLoadedArtists = computed(() => artistsData.value ? artistsData.value.artists.length : 0)
 
 async function loadArtists() {
+    if (artistsData.value) {
+        writeInfoLogs("skip artist refresh");
+        return
+    }
     const res = await getAPI(`/api/artist/list`, 'loading artists list');
     if (!res) {
         return;
     }
     mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
+    dbCacheStore.setArtistsData(res);
     return res;
 }
 
@@ -70,6 +80,15 @@ async function load({ done }) {
     else {
         done('empty')
     }
+}
+
+
+async function refreshCountArtists() {
+    const res = await getAPI(`/api/artist/count`, 'refresh artists count');
+    if (!res) {
+        return "No data";
+    }
+    return res.result;
 }
 
 </script>

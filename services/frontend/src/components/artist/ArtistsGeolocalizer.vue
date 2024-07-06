@@ -1,6 +1,7 @@
 <template>
   <v-card>
-    <ArtistToolbar />
+    <NavigatorToolbar title="Artists" :countLoaded="countLoadedArtists" :countRefreshCallback="refreshCountArtists"
+      :autoRefresh="true" />
     <v-container fluid v-if="dataPending">
       <v-row dense justify="start">
         <v-col cols="12" v-for="n in 3">
@@ -83,34 +84,42 @@
 
 <script setup lang="ts">
 import { mdiAccount, mdiCloseCircle, mdiContentSaveOff, mdiOpenInNew, mdiPencil, mdiWeb } from '@mdi/js';
-import { getAPI, putAPI, writeErrorLogs } from '~/commons/restAPI';
-import ArtistToolbar from './ArtistToolbar.vue';
+import { getAPI, putAPI, writeErrorLogs, writeInfoLogs } from '~/commons/restAPI';
 import type { Artist, ArtistMapEditorContext } from '~/commons/interfaces';
 import { createGeomData } from '~/commons/utils';
 import { SNACKBAR_TIMEOUT } from '~/commons/constants';
 import LocationValidatorListItem from './LocationValidatorListItem.vue';
 import LocationValidatorItem from './LocationValidatorItem.vue';
+import NavigatorToolbar from '../NavigatorToolbar.vue';
 
 const mapStore = useSpatialMapStore();
 const geolocalizerStore = useGeolocalizerStore();
 const snackbarStore = useSnackbarStore();
+const dbCacheStore = useDbCacheStore();
+const { artistsData } = storeToRefs(dbCacheStore);
 const { mappingRefCountries } = storeToRefs(geolocalizerStore);
 const { editionId } = storeToRefs(mapStore);
-const { pending: dataPending, data: artistsData, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
+const { pending: dataPending, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
 const hasCountryGuessPending = computed(() => (artistId: string) => !!guessCountry.value[artistId]);
 const hasArtistManyCountries = computed(() => (artistId: string) => guessCountry.value[artistId].length > 1);
 const artistCountryContent = computed(() => (artistId: string) => guessCountry.value ? guessCountry.value[artistId] : "");
+const countLoadedArtists = computed(() => artistsData.value ? artistsData.value.artists.length : 0)
 
 const guessCountry = ref({} as any);
 const overlay = ref(false);
 const editionContext = ref({} as ArtistMapEditorContext);
 
 async function loadArtists() {
+  if (artistsData.value) {
+    writeInfoLogs("skip artist refresh");
+    return
+  }
   const res = await getAPI(`/api/artist/list?limit=15`, 'loading artists list');
   if (!res) {
     return;
   }
   mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
+  dbCacheStore.setArtistsData(res);
   return res;
 }
 
@@ -194,4 +203,11 @@ function cancelEdition(artist: Artist) {
   mapStore.closeEditionId(artist.id);
 }
 
+async function refreshCountArtists() {
+  const res = await getAPI(`/api/artist/count`, 'refresh artists count');
+  if (!res) {
+    return "No data";
+  }
+  return res.result;
+}
 </script>

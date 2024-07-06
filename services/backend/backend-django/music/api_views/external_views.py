@@ -1,5 +1,5 @@
 import os
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from rest_framework.views import APIView
 import musicbrainzngs
 from unidecode import unidecode

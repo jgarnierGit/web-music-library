@@ -53,6 +53,15 @@ var restAPI: RestAPI = {
         } catch (err) {
             return Promise.reject(err);
         }
+    },
+
+    execDeleteAPI: async (request: string, context: string, playload: any) => {
+        try {
+            const axiosResult = await axiosInstance.delete(request, playload);
+            return Promise.resolve(axiosResult);
+        } catch (err) {
+            return Promise.reject(err);
+        }
     }
 };
 
@@ -114,6 +123,17 @@ if (window.__TAURI__) {
         }
         return await fetch(API_BASE_URL + request, params);
     }
+
+    restAPI.execDeleteAPI = async (request: string, context: string, playload?: any) => {
+        const params: any = {
+            method: "DELETE",
+            responseType: ResponseType.JSON
+        }
+        if (playload) {
+            params.body = Body.json(playload);
+        }
+        return await fetch(API_BASE_URL + request, params);
+    }
 }
 else if (!IS_SERVER_RUNNING) {
     restAPI.writeErrorLogs("Server is not connected, axios endpoints disabled, use this only for frontend development, and make sure to mock the API data you need");
@@ -163,6 +183,20 @@ async function putAPI(request: string, context: string, playload: any) {
     }
 }
 
+async function deleteAPI(request: string, context: string, playload?: any) {
+    try {
+        const getRes = await restAPI.execDeleteAPI(request, context, playload);
+        if (getRes.status < 200 || getRes.status > 299) {
+            console.error(getRes.data);
+            return;
+        }
+        return getRes.data;
+    } catch (err) {
+        snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
+        restAPI.writeErrorLogs(`${request} : ${err}`);
+    }
+}
+
 function writeErrorLogs(log: any) {
     restAPI.writeErrorLogs(log);
 }
@@ -175,4 +209,4 @@ function writeInfoLogs(log: any) {
     restAPI.writeInfoLogs(log);
 }
 
-export { axiosInstance, getAPI, postAPI, putAPI, writeErrorLogs, writeWarnLogs, writeInfoLogs };
+export { axiosInstance, deleteAPI, getAPI, postAPI, putAPI, writeErrorLogs, writeWarnLogs, writeInfoLogs };

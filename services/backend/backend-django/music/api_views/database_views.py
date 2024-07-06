@@ -66,6 +66,22 @@ def artist_count(request):
     return JsonResponse({"result": count_artists})
 
 
+@require_GET
+def artist_geoms(request):
+    artists_with_geoms = Artist.objects.filter(geom__isnull=False)
+    print(artists_with_geoms)
+    return JsonResponse(
+        {"result": [ArtistSerializer(artist).data for artist in artists_with_geoms]}
+    )
+
+
+@require_GET
+def music_count(request):
+    count_musics = Music.objects.count()
+    print(count_musics)
+    return JsonResponse({"result": count_musics})
+
+
 class PlaylistNextView(APIView):
     def post(self, request):
         music_filter = request.data

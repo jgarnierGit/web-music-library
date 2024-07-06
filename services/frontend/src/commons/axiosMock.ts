@@ -1,12 +1,13 @@
 import { API_BASE_URL } from './constants';
 import MockAdapter from 'axios-mock-adapter';
-import type { Music } from './interfaces';
+import type { Artist, Music } from './interfaces';
 import { axiosInstance, writeInfoLogs } from './restAPI';
 
 
 export async function mockAxios() {
     var mock = new MockAdapter(axiosInstance, { delayResponse: 500 });
     mock.onGet("/api/artist/count").reply(200, { result: "1000" });
+    mock.onGet("api/music/count").reply(200, { result: "25000" });
     const musicRes = {
         name: "fake", album: "fakeAlbum", artist: { name: "fakeArtist" },
         count_played: 2
@@ -22,7 +23,7 @@ export async function mockAxios() {
     const listArtistsResult = await responseArtists.json();
 
     mock.onGet('/api/artist/list').reply(200, { artists: listArtistsResult.artists.slice(0, 20) });
-    mock.onGet(/\/api\/artist\/list\?offset\=[0-9]+/).reply((config) => {
+    mock.onGet(/\/api\/artist\/list\?(limit=[0-9]+)?(&)?(offset\=[0-9]+)?/).reply((config) => {
         if (!config.url) {
             return [200, { artists: [] }]
         }
@@ -48,6 +49,14 @@ export async function mockAxios() {
         // FR = ["France"]
         return [200, { result: ["FR"] }]
     });
+
+    mock.onGet(/\/api\/folder\/refresh\?force=(true|false)/).reply(200, { result: "7c551693-f08b-4cd5-b77c-a85630f07939" });
+    const folderRefreshContent = { "task_id": "34b60af4-e4f1-4d7a-8a01-9d2f3fb68916", "task_status": "PROGRESS", "task_result": { "current": 1000 } };
+    mock.onGet(/\/api\/job\/[\da-f\-]{36}/).reply(200, folderRefreshContent);
+
+    mock.onDelete(/\/api\/job\/[\da-f\-]{36}/).reply(204);
+
+    mock.onGet("/api/map/getGeometries").reply(200, { artists: listArtistsResult.artists.filter((artist: Artist) => !!artist.geom) });
     writeInfoLogs("mocked everything");
 }
 

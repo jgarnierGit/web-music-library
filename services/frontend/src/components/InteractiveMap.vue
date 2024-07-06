@@ -1,15 +1,12 @@
 <template>
     <v-card>
-        <v-toolbar density="compact">
-            <v-toolbar-title>Geolocalizer
-            </v-toolbar-title>
-        </v-toolbar>
+        <NavigatorToolbar title="Geolocalizer" :countLoaded="-1" :countRefreshCallback="refreshArtistGeoms" />
         <v-sheet height="70vh" max-height="90vh" rounded="lg">
             <div id="musicMap" class="mapContainer">
             </div>
             <div ref="mapPlayerButton">
                 Play from {{ activeCountryPopup }}
-                <playlist-actions :type="PLAYLIST_TYPES.COUNTRY" :value="activeCountryPopup" />
+                <PlaylistActions :type="PLAYLIST_TYPES.COUNTRY" :value="activeCountryPopup" />
             </div>
         </v-sheet>
     </v-card>
@@ -22,7 +19,9 @@ import L from 'leaflet';
 import "leaflet.markercluster";
 import type { GeomData } from '~/commons/interfaces';
 import { COUNTRY_FIELD_NAME, FRONT_PUBLIC_URL, PLAYLIST_TYPES } from '~/commons/constants';
-import { writeErrorLogs } from '~/commons/restAPI';
+import { getAPI, writeErrorLogs } from '~/commons/restAPI';
+import PlaylistActions from './PlaylistActions.vue';
+import { createGeomData } from '~/commons/utils';
 
 const countriesLayerBuffers = await useAsyncData('countries', () => loadCountries());
 const activeCountryPopup = ref("");
@@ -65,6 +64,15 @@ watch(geomLayerData, (newVal, oldVal) => {
         createReadMarkers(newVal);
     }
 })
+
+async function refreshArtistGeoms() {
+    const res = await getAPI(`/api/map/getGeometries`, 'fetch artist geoms');
+    if (!res) {
+        return "No data";
+    }
+    mapStore.updateLayerData(createGeomData(res.result));
+    return res.result.length;
+}
 
 function createReadMarkers(data: GeomData[]) {
     if (!leafletMap.value) {

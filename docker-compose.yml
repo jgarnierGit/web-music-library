@@ -14,6 +14,7 @@ services:
     ports:
       - 8000:8000
       - 5678:5678 # debug
+      - 6900:6900
     volumes:
       - type: bind
         source: ${MUSIC_LIBRARY_PATH}

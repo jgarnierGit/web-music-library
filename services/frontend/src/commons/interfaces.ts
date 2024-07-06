@@ -59,7 +59,8 @@ interface RestAPI {
 
     execPostAPI: (request: string, context: string, playload?: any) => Promise<any>,
 
-    execPutAPI: (request: string, context: string, playload: any) => Promise<any>
+    execPutAPI: (request: string, context: string, playload: any) => Promise<any>,
+    execDeleteAPI: (request: string, context: string, playload: any) => Promise<any>
 }
 
 export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext, GeomData, RestAPI }
