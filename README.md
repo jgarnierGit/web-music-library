@@ -2,11 +2,9 @@
 
 ![Music library](./doc/header.jpg "Music library")
 
-Have you ever wonder of playing your music located in France ? or Canada ? or Jamaiqua ?
+Ever wanted to play your music located in France ? or Canada ? or Jamaiqua ?
 
 Just pick a country and let the music play !
-
-(Also edit your music library to add geolocalisation link ;) )
 
 Known bug: Chrome doesn't display `<audio>` balise because of weird positioning, but the song is playing.
 
@@ -15,13 +13,12 @@ Known bug: Chrome doesn't display `<audio>` balise because of weird positioning,
 - An Audio manager and player. Currently supporting MP3, OGG & WAV as I simply use <audio> html element. Sorry for all FLAC lovers.
 - Define playlist from each available panels
 
-- Music library accessing in readonly mode to your local library
-  - Musics from your fileSystem are saved in database on the first reach.
+- Music library accesses your local library in readonly mode
+- Saves music and metadatas in database with the scan feature
   
 ## What it is not
 
-- A music metadata editor. For that part, I recommand using [MP3Tag](https://www.mp3tag.de)
-  - Some functionalities adds metadata linked to your music, all saved in the embeded database. Your files are accessed on read-only.
+- A music metadata editor. For that part, I recommend using [MP3Tag](https://www.mp3tag.de)
 
 ## Overview
 
@@ -112,10 +109,10 @@ Add geolocalization to your artists, using
 ![MusicBrainz positioning](./doc/guessing_position.jpg "MusicBrainz positioning")
 
 
-### Known limitation of auto-positioning
+### Known limitation while auto-positioning
  ----
- - While using the geolocalizer, you may encounter weird positioning at first sight, because the point computation is made from the center of mass of the whole country.
-i.e, for France auto-location always creates a point near Marocco in the ocean. This is because of French Guiana which is part of the country geometry.
+ - When using the geolocator, you may encounter weird positioning at first sight, as the points are calculated from the center of mass of the whole country.
+i.e, for France, the auto-localizer always creates a point near Morocco in the ocean because this is the center of mass of France, French Guiana and Corsica. 
 
     - ![Manual positioning](./doc/manual_editing_position.jpg "Manual positioning")
 
@@ -123,7 +120,7 @@ i.e, for France auto-location always creates a point near Marocco in the ocean. 
 
     - ![Positioning error](./doc/error_positioning.jpg "Positioning error")
 
-In that case, feel free to use the pencil and pick the country of your choice.
+You can use manual picking to rectify to the right location then.
 
 ----
 
