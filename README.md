@@ -1,6 +1,6 @@
 # Music Library player
 
-![Music library](./doc/geoviewer.jpg "Music library")
+![Music library](./doc/header.jpg "Music library")
 
 Have you ever wonder of playing your music located in France ? or Canada ? or Jamaiqua ?
 
@@ -8,13 +8,16 @@ Just pick a country and let the music play !
 
 (Also edit your music library to add geolocalisation link ;) )
 
-Incompatible with Chrome, <audio> balise is not displayed, but the song is playing.
+Known bug: Chrome doesn't display `<audio>` balise because of weird positioning, but the song is playing.
 
 ## What it is
 
 - An Audio manager and player. Currently supporting MP3, OGG & WAV as I simply use <audio> html element. Sorry for all FLAC lovers.
 - Define playlist from each available panels
 
+- Music library accessing in readonly mode to your local library
+  - Musics from your fileSystem are saved in database on the first reach.
+  
 ## What it is not
 
 - A music metadata editor. For that part, I recommand using [MP3Tag](https://www.mp3tag.de)
@@ -33,51 +36,113 @@ Backend :
   - Database : [PostgreSQL](https://www.postgresql.org/), [PostGIS](https://postgis.net/)
   - Geospatial : [GeoDjango](https://docs.djangoproject.com/fr/5.0/ref/contrib/gis/)
   - Audio metadata : [mutagen](https://mutagen.readthedocs.io)
+  - Distributed Task Queue : [Celery](https://docs.celeryq.dev) with [Redis](https://redis.io/fr/)
 
 Release :
   - Frontend : [Tauri](https://tauri.app/)
 
 ## Architecture Diagram
 
-[WIP]
+
+```mermaid
+flowchart TD
+
+backend[Django - GeoDjango
+http: 8000
+debug: 5678]
+frontend[Vue3-Pinia-Leaflet
+http: 3000]
+celery[Celery - Redis
+debug: 6900]
+db[PostGIS
+port: 54333]
+shp[<a href='https://www.naturalearthdata.com/'>Natural Earth Data</a>
+countries shapefile]
+Nginx[Nginx
+http: 8081]
+Tauri[Tauri
+protocol: tauri.localhost]
+exeFront[exe: geospatial-music-library.exe]
+exeBack[exe: manage.exe]
+Filesystem[FileSystem 
+.env MUSIC_LIBRARY_PATH]
+
+subgraph Web Application
+  frontend --> Nginx
+  frontend --> MusicBrainz
+  subgraph front
+    frontend --> shp
+    webAssembly --> projectM
+    frontend --> webAssembly
+  end
+
+  subgraph back
+    frontend --> backend
+    backend --> celery
+    backend --> db[(db)]
+    backend --> gdal
+  end
+
+  
+end
+
+subgraph Desktop
+  Tauri-.->|build|frontend
+  PyInstaller -.->|build|backend
+  Nginx -->|read only| Filesystem
+  Tauri ==> exeFront
+  PyInstaller ==> exeBack
+end
+
+```
 
 ## Features 
 
-play music and define next songs to play from
- - your filesystem (image)
- - artists view (image)
- - country location (image)
+Play music and define next songs to play from :
+ - Your filesystem 
+   - ![FileSystem filtering](./doc/file_system_playlist.jpg "FileSystem filtering")
+ - Artists view
+   - ![Artists filtering](./doc/artist_playlist.jpg "Artists filtering")
+ - Country location
+   - ![Countries filtering](./doc/country_location_playlist.jpg "Countries filtering")
 
-- Music library accessing in readonly mode to your local library
-  - Musics from your fileSystem are saved in the database on the first reach.
-- Database persistency with metadata exposition
-
-- Geospatial music filtering
-
-  ![Geospatial filtering](./doc/playlist_geospatial.jpg "Geospatial filtering")
-
-- Geospatial music editor via [Musicbrainz](https://musicbrainz.org) API
-
-  ![MusicBrainz positioning](./doc/guessing_position.jpg "MusicBrainz positioning")
-
-- Geospatial music editor manual picking (either to fix ne_110m_admin_0_countries precision or when MusicBrainz doesn't know - which barely happens)
-
-  ![Manual positioning](./doc/manual_editing_position.jpg "Manual positioning")
-
-- ProjectM Milkdrop vizualisation in focus mode to enjoy animations (still WIP)
-
-  ![ProjectM focus Mode](./doc/projectM_focus.jpg "ProjectM focus Mode")
-
-- ProjectM Milkdrop vizualisation in background mode to keep editing the playlist
-
-  ![ProjectM background Mode](./doc/projectM_background.jpg "ProjectM background Mode")
+Add geolocalization to your artists, using 
+  - [Musicbrainz](https://musicbrainz.org) API to get auto-suggestions
+  - Manual picking for unknown artists or to fix out-of-boundaries locations
+![MusicBrainz positioning](./doc/guessing_position.jpg "MusicBrainz positioning")
 
 
-A checksum is calculated based on music name, artist name and album name, to make the database resilient to filesystem changes.
+### Known limitation of auto-positioning
+ ----
+ - While using the geolocalizer, you may encounter weird positioning at first sight, because the point computation is made from the center of mass of the whole country.
+i.e, for France auto-location always creates a point near Marocco in the ocean. This is because of French Guiana which is part of the country geometry.
+
+    - ![Manual positioning](./doc/manual_editing_position.jpg "Manual positioning")
+
+  - The result breaks the player toolbar :
+
+    - ![Positioning error](./doc/error_positioning.jpg "Positioning error")
+
+In that case, feel free to use the pencil and pick the country of your choice.
+
+----
+
+Enjoy [ProjectM](https://github.com/projectM-visualizer/projectm)  vizualisations (PoC in very early stage)
+  - Focus mode 
+
+    - ![ProjectM focus Mode](./doc/projectM_focus_mode.jpg "ProjectM focus Mode")
+
+  - Background mode to keep editing the playlist
+
+    - ![ProjectM background Mode](./doc/projectM_background_mode.jpg "ProjectM background Mode")
+
 
 ## Setup
 
-[Docker](https://www.docker.com/)
+Requires only [Docker](https://www.docker.com/) to launch application.
+
+[NPM](https://www.npmjs.com/) if you want to build frontend as a desktop executable.
+
 
 # Development
 
@@ -105,28 +170,31 @@ full dockerized environment :
   - database and schema : `music`.`public`
   - external database manager recommended [DBeaver](https://dbeaver.io/), for as long as I don't provide pgadmin container.
 
-### Notes
+## FAQ
 
-config update :
+### Configuration update (.env)
 
-If you want to update .env file configuration to add your email or link an other folder, don't forget to run the following command to apply changes:
+You need to update your .env file configuration to add your email or link an other folder, don't forget to run the following command to apply changes:
  - `docker compose stop backend`
  - `docker compose up backend --build`
 
-`backend` container may fail to start with error `exec /app/run_dev.sh: no such file or directory`.
+### "[backend] exec /app/run_dev.sh: no such file or directory"
+This error may occur on backend start
  - run `dos2unix ./run_dev.sh` then `docker compose restart backend`
 
-`backend` may fails to connect to database as it doesn't wait enough for the first db init :
+### Backend cannot connect to database
+`backend` may fails to connect to database because it doesn't wait enough for the first db init :
 
  - Wait for the db container log line `LOG:  database system is ready to accept connections`. It may take a while and you may see database stopping and restarting in the process.
  - Then run `docker compose restart backend`.
 
-`frontend` may fails to bind adress with the error `listen EADDRINUSE: address already in use`.
+### "[frontend] listen EADDRINUSE: address already in use"
+Don't know why. may happen sometimes, we are not alone.
  - run `docker compose up frontend --force-recreate`
 
-## dev Notes
+## Dev notes
 
-front end dev, set this variable to disable API calls if you do not plan to work with the server launched
+Run frontend without server, use mocked data / API
 
 ```
   vite: {
