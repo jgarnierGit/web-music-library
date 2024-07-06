@@ -3,7 +3,7 @@
         <MusicMenu />
         <v-main v-show="!isFocused">
             <v-container class="background-over-milkdrop">
-                <slot />
+                <slot></slot>
             </v-container>
         </v-main>
         <v-footer app height="50" center class="background-over-milkdrop">

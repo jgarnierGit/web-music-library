@@ -7,7 +7,8 @@ import L from 'leaflet';
 export const useSpatialMapStore = defineStore('spatialMap', () => {
     const editionId = ref<string>();
     const editorContext = ref<ArtistMapEditorContext>();
-    const countriesLayer = ref();
+    const countriesLayer = ref<any>();
+    const countriesFeatures = ref();
     const geomLayerData = ref<GeomData[]>()
 
     function openEditionForId(id: string, context: ArtistMapEditorContext) {
@@ -44,6 +45,10 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         }
     }
 
+    function setCountriesFeatures(countryFeatures: any) {
+        countriesFeatures.value = countryFeatures;
+    }
+
     function setCountriesLayer(countryLayer: L.GeoJSON) {
         countriesLayer.value = countryLayer;
     }
@@ -61,5 +66,5 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         return geom;
     }
 
-    return { editionId, editorContext, geomLayerData, countriesLayer, openEditionForId, closeEditionId, updateLayerData, getGeomFromLabel, setCountriesLayer };
+    return { editionId, editorContext, geomLayerData, countriesLayer, countriesFeatures, openEditionForId, closeEditionId, updateLayerData, getGeomFromLabel, setCountriesLayer, setCountriesFeatures };
 });

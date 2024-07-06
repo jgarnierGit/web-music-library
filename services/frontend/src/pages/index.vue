@@ -16,7 +16,7 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="4" class="opacity-100">
+    <v-col cols="7" class="opacity-100">
       <InteractiveMap />
     </v-col>
 

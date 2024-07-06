@@ -16,15 +16,15 @@
                 Server log: "{{ dataError }}"
             </v-alert>
         </v-container>
-        <v-infinite-scroll v-else :height="300" :items="artistsData.artists" :onLoad="load">
+        <v-infinite-scroll v-else :height="300" :onLoad="load">
             <v-container fluid>
                 <v-row dense justify="start">
                     <v-col cols="3" v-for="artist in artistsData.artists" :key="artist.id">
                         <v-card max-width="20vw">
                             <v-img src="/default_artist.png" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" cover>
-
+                                <v-card-title class="text-white text-h6" v-text="artist.name"></v-card-title>
                                 <v-toolbar color="transparent">
-                                    <v-toolbar-title class="text-white" v-text="artist.name"></v-toolbar-title>
+
                                     <template v-slot:append>
                                         <PlaylistActions :type="PLAYLIST_TYPES.ARTIST" :value="artist.id" />
                                     </template>

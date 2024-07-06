@@ -1,6 +1,7 @@
 <template>
     <v-card>
-        <NavigatorToolbar title="Geolocalizer" :countLoaded="-1" :countRefreshCallback="refreshArtistGeoms" />
+        <NavigatorToolbar title="Geolocalizer" :countLoaded="countLoadedData"
+            :countRefreshCallback="refreshArtistGeoms" />
         <v-sheet height="70vh" max-height="90vh" rounded="lg">
             <div id="musicMap" class="mapContainer">
             </div>
@@ -19,15 +20,28 @@ import L from 'leaflet';
 import "leaflet.markercluster";
 import type { GeomData } from '~/commons/interfaces';
 import { COUNTRY_FIELD_NAME, FRONT_PUBLIC_URL, PLAYLIST_TYPES } from '~/commons/constants';
-import { getAPI, writeErrorLogs } from '~/commons/restAPI';
+import { getAPI, writeErrorLogs, writeInfoLogs } from '~/commons/restAPI';
 import PlaylistActions from './PlaylistActions.vue';
 import { createGeomData } from '~/commons/utils';
 
-const countriesLayerBuffers = await useAsyncData('countries', () => loadCountries());
 const activeCountryPopup = ref("");
+const countLoadedData = ref(0);
 const mapStore = useSpatialMapStore();
 const playlist = usePlaylistStore();
-const { editionId, editorContext, geomLayerData, countriesLayer } = storeToRefs(mapStore);
+const { editionId, editorContext, geomLayerData, countriesFeatures, countriesLayer } = storeToRefs(mapStore);
+const style = {
+    hilight: {
+        dashArray: '',
+        fillColor: 'white',
+        fillOpacity: 0.85
+    },
+    default: {
+        fillOpacity: 0, weight: 1,
+        color: 'black',
+    }
+}
+
+await useAsyncData('countries', () => loadCountries());
 const mapPlayerButton = ref();
 const layersCountValues = ref();
 const clusterPopupPlayer = ref();
@@ -60,16 +74,33 @@ watch(geomLayerData, (newVal, oldVal) => {
             all[value.name] = (all[value.name] ?? 0) + 1;
             return all;
         }, {});
-
+        countLoadedData.value = newVal.length;
         createReadMarkers(newVal);
     }
 })
+
+watch([countriesFeatures, leafletMap], ([newValLayer, newValMap]) => {
+    if (newValLayer && newValMap) {
+        const cLayer = L.geoJSON(newValLayer, {
+            style: style.default,
+            onEachFeature: onEachFeature
+        });
+        cLayer.addTo(newValMap);
+        mapStore.setCountriesLayer(cLayer);
+        L.Icon.Default.prototype.options.className = "mapMarker";
+        if (geomLayerData.value) {
+            createReadMarkers(geomLayerData.value)
+        }
+    }
+},
+    { immediate: true });
 
 async function refreshArtistGeoms() {
     const res = await getAPI(`/api/map/getGeometries`, 'fetch artist geoms');
     if (!res) {
         return "No data";
     }
+    countLoadedData.value = res.result.length;
     mapStore.updateLayerData(createGeomData(res.result));
     return res.result.length;
 }
@@ -200,10 +231,6 @@ function resetCountryStyleReadMarker(a: any) {
 
 onMounted(() => {
     initLeafletMap();
-    L.Icon.Default.prototype.options.className = "mapMarker";
-    if (geomLayerData.value) {
-        createReadMarkers(geomLayerData.value)
-    }
 })
 
 function initLeafletMap() {
@@ -213,44 +240,16 @@ function initLeafletMap() {
         maxZoom: 10,
         attribution: '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
     }).addTo(leafletMap.value);
-    createCountriesLayer();
 }
 
 
 async function loadCountries() {
-    try {
-        return await shp(`${FRONT_PUBLIC_URL}/geodata/ne_110m_admin_0_countries`);
-    } catch (err) {
-        writeErrorLogs(`couldn't load shp, ${JSON.stringify(err)}`);
-    }
-
-}
-
-async function createCountriesLayer() {
-    // for some reason I can't make it work with destructuration and a watcher...
-    if (countriesLayerBuffers.status.value === "error") {
-        console.error(countriesLayerBuffers.error.value)
+    if (countriesLayer.value) {
+        writeInfoLogs("Skip countries shp loading");
         return
     }
-    else if (countriesLayerBuffers.status.value === "pending" || countriesLayerBuffers.status.value === "idle") {
-        console.log("countries layers loading still pending");
-        return
-    }
-    const res = countriesLayerBuffers.data.value;
-
-    if (!res) {
-        console.error("no result for countries layer");
-        return
-    }
-    if (!leafletMap.value) {
-        console.error("no map instanciated");
-        return;
-    }
-    const cLayer = L.geoJSON(res, {
-        style: style.default,
-        onEachFeature: onEachFeature
-    }).addTo(leafletMap.value);
-    mapStore.setCountriesLayer(cLayer);
+    const shpRes = await shp(`${FRONT_PUBLIC_URL}/geodata/ne_110m_admin_0_countries`);
+    mapStore.setCountriesFeatures(shpRes);
 }
 
 function onEachFeature(feature: any, layer: any) {
@@ -259,18 +258,6 @@ function onEachFeature(feature: any, layer: any) {
         mouseout: resetHighlight,
         click: pickCountry
     })
-}
-
-const style = {
-    hilight: {
-        dashArray: '',
-        fillColor: 'white',
-        fillOpacity: 0.85
-    },
-    default: {
-        fillOpacity: 0, weight: 1,
-        color: 'black',
-    }
 }
 
 function highlightFeature(e: any) {

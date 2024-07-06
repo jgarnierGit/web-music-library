@@ -8,6 +8,8 @@ Just pick a country and let the music play !
 
 (Also edit your music library to add geolocalisation link ;) )
 
+Incompatible with Chrome, <audio> balise is not displayed, but the song is playing.
+
 ## What it is
 
 - An Audio manager and player. Currently supporting MP3, OGG & WAV as I simply use <audio> html element. Sorry for all FLAC lovers.
@@ -40,6 +42,11 @@ Release :
 [WIP]
 
 ## Features 
+
+play music and define next songs to play from
+ - your filesystem (image)
+ - artists view (image)
+ - country location (image)
 
 - Music library accessing in readonly mode to your local library
   - Musics from your fileSystem are saved in the database on the first reach.
@@ -85,7 +92,8 @@ edit .env example before first launch :
 
 ## Start up
 
-`docker compose up`
+full dockerized environment :
+`docker compose --profile full up`
 
 - frontend (`http://localhost:3000`)
 - backend (`http://localhost:8000`)
@@ -99,10 +107,22 @@ edit .env example before first launch :
 
 ### Notes
 
+config update :
+
+If you want to update .env file configuration to add your email or link an other folder, don't forget to run the following command to apply changes:
+ - `docker compose stop backend`
+ - `docker compose up backend --build`
+
+`backend` container may fail to start with error `exec /app/run_dev.sh: no such file or directory`.
+ - run `dos2unix ./run_dev.sh` then `docker compose restart backend`
+
 `backend` may fails to connect to database as it doesn't wait enough for the first db init :
 
  - Wait for the db container log line `LOG:  database system is ready to accept connections`. It may take a while and you may see database stopping and restarting in the process.
  - Then run `docker compose restart backend`.
+
+`frontend` may fails to bind adress with the error `listen EADDRINUSE: address already in use`.
+ - run `docker compose up frontend --force-recreate`
 
 ## dev Notes
 

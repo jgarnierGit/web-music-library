@@ -16,7 +16,7 @@
         Server log: "{{ dataError }}"
       </v-alert>
     </v-container>
-    <v-infinite-scroll v-else height="80vh" item-height="48" :items="artistsData.artists" @load="load">
+    <v-infinite-scroll v-else height="80vh" item-height="48" @load="load">
       <template v-for="(artist, index) in artistsData.artists" :key="artist.id">
         <v-list-item :subtitle="`${artist.country_name ?? 'NO DATA'}`" :title="`${artist.name}`">
           <template v-slot:prepend>
