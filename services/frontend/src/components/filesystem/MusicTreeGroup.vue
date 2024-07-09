@@ -4,8 +4,8 @@
             <v-list-item v-if="hasContent" v-bind="props" :title="musicFolder.name"
                 v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
                 <template v-slot:prepend>
-                    <v-icon v-if="!hoveringFolder">{{ folderIcon(musicFolder, isOpen) }}</v-icon>
-                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="[musicFolder.path]" />
+                    <v-icon v-if="!hoveringFolder">{{ folderIcon(isOpen) }}</v-icon>
+                    <PlaylistActions v-else :type="PLAYLIST_TYPES.FOLDER" :value="[musicFolder.path]" />
                 </template>
 
             </v-list-item>
@@ -14,7 +14,7 @@
                 v-on:mouseover="hoveringFolder = true" v-on:mouseleave="hoveringFolder = false">
                 <template v-slot:prepend>
                     <v-icon v-if="!hoveringFolder">{{ mdiFolder }}</v-icon>
-                    <PlaylistActions v-if="hoveringFolder" :type="PLAYLIST_TYPES.FOLDER" :value="[musicFolder.path]" />
+                    <PlaylistActions v-else :type="PLAYLIST_TYPES.FOLDER" :value="[musicFolder.path]" />
                 </template>
 
             </v-list-item>
@@ -50,7 +50,7 @@ const hoveringId = ref<string>();
 const hoveringFolder = ref(false);
 const loading = ref(false);
 
-const folderIcon = computed(() => (folder: Folder, isOpen: boolean) => isOpen ? mdiFolderOpen : mdiFolder) // TODO folder.path === hoveringId.value ? mdiPlay :
+const folderIcon = computed(() => (isOpen: boolean) => isOpen ? mdiFolderOpen : mdiFolder)
 const musicIcon = computed(() => (file: File) => file.error ? '' : file.music.id === hoveringId.value ? mdiPlay : mdiFileMusicOutline)
 const hasErrorStyle = computed(() => (file: File) => file.error ? 'error' : '')
 

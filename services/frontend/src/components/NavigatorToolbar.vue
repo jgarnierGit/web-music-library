@@ -5,6 +5,8 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
+            <slot />
+            <v-divider vertical></v-divider>
             <v-btn icon @click="refreshCount()" :disabled="isRefreshing"><v-icon>{{ mdiRefresh }}</v-icon></v-btn>
         </v-toolbar-items>
     </v-toolbar>

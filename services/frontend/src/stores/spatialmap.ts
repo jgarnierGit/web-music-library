@@ -16,6 +16,10 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         editorContext.value = context;
     }
 
+    function closeEdition() {
+        editionId.value = undefined;
+    }
+
     function closeEditionId(id: string) {
         if (editionId.value !== id) {
             console.warn(`${id} wasn't in edition anyway`);
@@ -66,5 +70,5 @@ export const useSpatialMapStore = defineStore('spatialMap', () => {
         return geom;
     }
 
-    return { editionId, editorContext, geomLayerData, countriesLayer, countriesFeatures, openEditionForId, closeEditionId, updateLayerData, getGeomFromLabel, setCountriesLayer, setCountriesFeatures };
+    return { editionId, editorContext, geomLayerData, countriesLayer, countriesFeatures, openEditionForId, closeEditionId, updateLayerData, getGeomFromLabel, setCountriesLayer, setCountriesFeatures, closeEdition };
 });

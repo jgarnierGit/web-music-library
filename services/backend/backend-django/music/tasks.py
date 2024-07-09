@@ -23,7 +23,7 @@ def parse_tree(path, force_update, task, updated=0):
                 and os.path.splitext(p_path)[1] in AUDIO_EXTENSIONS
             ):
                 existing_music = Music.objects.filter(path=p_path)
-                if not existing_music:
+                if not existing_music or force_update:
                     music = updateDb(p, p_path, force_update)
                     if music["saved"]:
                         updated += 1

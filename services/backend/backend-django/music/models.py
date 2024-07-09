@@ -135,6 +135,14 @@ class ArtistNameSerializer(serializers.ModelSerializer):
         fields = ["name"]
 
 
+class ArtistCardSerializer(ArtistSerializer):
+    tracks_count = serializers.IntegerField(read_only=True)
+    albums_count = serializers.IntegerField(read_only=True)
+
+    class Meta(ArtistSerializer.Meta):
+        fields = list(ArtistSerializer.Meta.fields) + ["tracks_count", "albums_count"]
+
+
 class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album

@@ -34,7 +34,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
     async function setRandomNextSong() {
         let response;
         if (filter.value) {
-            response = await postAPI(`/api/music/getRandom`, `get next random song with filtering ${filter.value}`, { filter_value: filter.value });
+            response = await postAPI(`/api/music/getRandom`, `get next random song with filtering ${filter.value}`, { filter: filter.value });
         }
         else {
             response = await postAPI(`/api/music/getRandom`, 'get next random song');

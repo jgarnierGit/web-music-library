@@ -1,7 +1,13 @@
 <template>
     <v-card>
         <NavigatorToolbar title="Artists" :countLoaded="countLoadedArtists" :countRefreshCallback="refreshCountArtists"
-            :autoRefresh="true" />
+            :autoRefresh="true">
+            <v-btn v-if="!isCard" @click="isCard = !isCard"><v-icon>{{ mdiAccountBoxOutline }}</v-icon>
+                <v-tooltip activator="parent" location="top">Display as cards</v-tooltip>
+            </v-btn>
+            <v-btn v-else @click="isCard = !isCard"><v-icon>{{ mdiFormatListText }}</v-icon>
+                <v-tooltip activator="parent" location="top">Display in list</v-tooltip></v-btn>
+        </NavigatorToolbar>
         <v-container fluid v-if="dataPending">
             <v-row dense justify="start">
                 <v-col cols="3" v-for="n in 3">
@@ -16,44 +22,31 @@
                 Server log: "{{ dataError }}"
             </v-alert>
         </v-container>
-        <v-infinite-scroll v-else :height="300" :onLoad="load">
-            <v-container fluid>
-                <v-row dense justify="start">
-                    <v-col cols="3" v-for="artist in artistsData.artists" :key="artist.id">
-                        <v-card max-width="20vw">
-                            <v-img src="/default_artist.png" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" cover>
-                                <v-card-title class="text-white text-h6" v-text="artist.name"></v-card-title>
-                                <v-toolbar color="transparent">
-
-                                    <template v-slot:append>
-                                        <PlaylistActions :type="PLAYLIST_TYPES.ARTIST" :value="[artist.id]" />
-                                    </template>
-                                </v-toolbar>
-                            </v-img>
-                            <v-card-text>
-                                {{ artist.country_name }}
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-container>
-        </v-infinite-scroll>
+        <ArtistsListContent v-else-if="!isCard" :load="load"></ArtistsListContent>
+        <ArtistsCardContent v-else-if="isCard" :load="load"></ArtistsCardContent>
     </v-card>
 </template>
 
 <script setup lang="ts">
-import { mdiCloseCircle } from '@mdi/js';
-import { PLAYLIST_TYPES } from '~/commons/constants';
+import { mdiAccountBoxOutline, mdiCloseCircle, mdiFormatListText } from '@mdi/js';
 import type { Artist } from '~/commons/interfaces';
 import { getAPI, writeInfoLogs } from '~/commons/restAPI';
 import { createGeomData } from '~/commons/utils';
-import PlaylistActions from '~/components/PlaylistActions.vue';
 import NavigatorToolbar from '~/components/NavigatorToolbar.vue';
+import ArtistsListContent from './artist/ArtistsListContent.vue';
+import ArtistsCardContent from './artist/ArtistsCardContent.vue';
 const mapStore = useSpatialMapStore();
 const dbCacheStore = useDbCacheStore();
-const { artistsData } = storeToRefs(dbCacheStore);
+const { artistsData, countLoadedArtists } = storeToRefs(dbCacheStore);
 const { pending: dataPending, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
-const countLoadedArtists = computed(() => artistsData.value ? artistsData.value.artists.length : 0)
+const isCard = ref(true);
+
+
+watch(artistsData, (newVal) => {
+    if (newVal) {
+        mapStore.updateLayerData(createGeomData(artistsData.value.artists.filter((artist: Artist) => artist.geom)));
+    }
+});
 
 async function loadArtists() {
     if (artistsData.value) {
@@ -73,8 +66,7 @@ async function loadArtists() {
 async function load({ done }) {
     const res: any = await getAPI(`/api/artist/list?offset=${artistsData.value.artists.length}`, 'loading more artists');
     if (res.artists && res.artists.length > 0) {
-        artistsData.value.artists.push(...res.artists)
-        mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
+        artistsData.value.artists.push(...res.artists);
         done('ok')
     }
     else {

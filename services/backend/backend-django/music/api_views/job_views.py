@@ -13,4 +13,4 @@ class JobView(APIView):
         """
         Cancel a Celery task given its task ID.
         """
-        return revoke(job_id)
+        return JsonResponse(revoke(job_id))

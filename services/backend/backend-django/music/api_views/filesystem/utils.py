@@ -13,7 +13,7 @@ class Metadata:
         self.genre: str = None
         self.track_duration: str = None
         self.track_number: str = None
-        self.bpm: str = None
+        self.bpm: int = None
 
 
 def get_metadata(file_path) -> Metadata:
@@ -43,7 +43,7 @@ def get_metadata(file_path) -> Metadata:
         print(f"{file_path}: Artist extraction error : {e}")
     # TODO manage thumbnail, could be one per album, or one per file, or none
     try:
-        apic = audio.get("APIC:", [None])[0]
+        apic = audio.get("APIC", [None])[0]
         if apic:
             if isinstance(apic, list):
                 metadata.thumbnail = apic[0]
@@ -77,7 +77,7 @@ def get_metadata(file_path) -> Metadata:
     except Exception as e:
         print(f"{file_path}: Track number extraction error : {e}")
     try:
-        metadata.bpm = audio.get("TBPM", [None])[0]
+        metadata.bpm = int(float(audio.get("TBPM", [0])[0]))
     except Exception as e:
         print(f"{file_path}: BPM extraction error : {e}")
     return metadata

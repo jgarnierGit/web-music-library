@@ -83,6 +83,9 @@ watch(refreshJobContent, async (jobRes) => {
             console.log("progress pending")
             fileSystemStore.updateCurrentState(jobRes.task_result ? jobRes.task_result.current : 0);
             setTimeout(async () => {
+                if (!refreshJobId.value) {
+                    return
+                }
                 refreshJobContent.value = await getAPI(`/api/job/${refreshJobId.value}`, "get refresh filesystem job status")
             }, 2000);
         }

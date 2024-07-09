@@ -30,6 +30,7 @@ const activeCountryPopup = ref<string[]>([]);
 const countLoadedData = ref(0);
 const mapStore = useSpatialMapStore();
 const playlist = usePlaylistStore();
+const dbCacheStore = useDbCacheStore();
 const { editionId, editorContext, geomLayerData, countriesFeatures, countriesLayer } = storeToRefs(mapStore);
 const style = {
     hilight: {
@@ -104,6 +105,7 @@ async function refreshArtistGeoms() {
     }
     countLoadedData.value = res.result.length;
     mapStore.updateLayerData(createGeomData(res.result));
+    dbCacheStore.setArtistDataGeomOnly(res.result);
     return res.result.length;
 }
 
