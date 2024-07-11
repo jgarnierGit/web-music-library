@@ -39,6 +39,8 @@ class Artist(models.Model):
     last_played = models.DateTimeField("last time played artist", null=True)
     count_played = models.IntegerField(default=0)
     count_skipped = models.IntegerField(default=0)
+    musicbrainz_id = models.TextField(null=True, blank=True)
+    genres = models.ManyToManyField(Genre)
 
     class Meta:
         constraints = [models.UniqueConstraint("name", name="unique_name_artist")]
@@ -57,17 +59,11 @@ class Album(models.Model):
         null=True,
         related_name="FK_ALBUM_ARTIST",
     )
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="FK_ALBUM_GENRE",
-    )
     date = models.IntegerField("Publication year", null=True)
     last_played = models.DateTimeField("last time played album", null=True)
     count_played = models.IntegerField(default=0)
     count_skipped = models.IntegerField(default=0)
+    genres = models.ManyToManyField(Genre)
 
     def __str__(self):
         return self.name
@@ -98,6 +94,7 @@ class Music(models.Model):
     count_played = models.IntegerField(default=0)
     count_skipped = models.IntegerField(default=0)
     checksum = models.TextField(null=True)
+    genres = models.ManyToManyField(Genre)
 
     def __str__(self):
         return self.name
@@ -109,6 +106,12 @@ class Music(models.Model):
             + str(self.album.name if self.album else "")
         )
         self.checksum = hashlib.sha256(data.encode()).hexdigest()
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ["id", "name"]
 
 
 class ArtistSerializer(serializers.ModelSerializer):
@@ -138,9 +141,23 @@ class ArtistNameSerializer(serializers.ModelSerializer):
 class ArtistCardSerializer(ArtistSerializer):
     tracks_count = serializers.IntegerField(read_only=True)
     albums_count = serializers.IntegerField(read_only=True)
+    genres = GenreSerializer(read_only=True, many=True)
 
     class Meta(ArtistSerializer.Meta):
-        fields = list(ArtistSerializer.Meta.fields) + ["tracks_count", "albums_count"]
+        fields = list(ArtistSerializer.Meta.fields) + [
+            "tracks_count",
+            "albums_count",
+            "genres",
+        ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["genres"] = GenreSerializer(
+            instance.genres.all(), many=True
+        ).data
+        if "_prefetched_objects_cache" in representation:
+            del representation["_prefetched_objects_cache"]
+        return representation
 
 
 class AlbumSerializer(serializers.ModelSerializer):

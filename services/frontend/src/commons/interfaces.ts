@@ -12,7 +12,8 @@ interface Folder {
 
 interface File {
     error: any,
-    music: Music
+    music: Music,
+    saved: boolean
 }
 
 interface Music {

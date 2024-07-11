@@ -12,8 +12,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
 from random import choice
-from django.db.models import Count
-from django.db.models import Q
+from .database.artists import get_artists_cards
 
 
 class IncrementMusicPlayedView(APIView):
@@ -46,36 +45,19 @@ class ArtistsListView(APIView):
                     {"error": "Invalid offset value"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        artists = Artist.objects.all().annotate(
-            tracks_count=Count("FK_MUSIC_ARTIST", distinct=True),
-            albums_count=Count("FK_ALBUM_ARTIST", distinct=True),
-        )[offset : offset + limit]
-        return JsonResponse(
-            {"artists": [ArtistCardSerializer(artist).data for artist in artists]}
-        )
+        artists = get_artists_cards(limit=limit, offset=offset)
+        serialized_artists = ArtistCardSerializer(artists, many=True).data
+        return Response({"artists": serialized_artists})
 
     def post(self, request):
         artist_param = request.data
         if artist_param:
             offset = artist_param.get("offset", 0)
             limit = artist_param.get("limit", 10)
-            artists_query = Artist.objects.all().annotate(
-                tracks_count=Count("FK_MUSIC_ARTIST", distinct=True),
-                albums_count=Count("FK_ALBUM_ARTIST", distinct=True),
-            )
-            for filter in artist_param.get("filters", []):
-                match filter["type"]:
-                    case "geom":
-                        if not filter["value"]:
-                            pass
-                        elif filter["value"] == "ACTIVE_GEOM_FILTER":
-                            artists_query = artists_query.filter(geom__isnull=False)
-                        elif filter["value"] == "ACTIVE_NO_GEOM_FILTER":
-                            artists_query = artists_query.filter(geom__isnull=True)
-        artists_res = artists_query[offset : offset + limit]
-        return JsonResponse(
-            {"artists": [ArtistCardSerializer(artist).data for artist in artists_res]}
-        )
+            filters = artist_param.get("filters", [])
+        artists_res = get_artists_cards(limit=limit, offset=offset, filters=filters)
+        serialized_artists = ArtistCardSerializer(artists_res, many=True).data
+        return Response({"artists": serialized_artists})
 
 
 class ArtistUpdateView(APIView):

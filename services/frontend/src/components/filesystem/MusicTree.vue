@@ -40,6 +40,11 @@ async function loadFolderContent() {
         writeInfoLogs("skip refreshing content folder");
         return;
     }
+
+    return await refreshRoot();
+}
+
+async function refreshRoot() {
     snackbarStore.setContent(`Loading music content`, SNACKBAR_TIMEOUT, "info");
     // load root content
     const getRes = await postAPI('/api/folder/list', 'loading file system root tree');

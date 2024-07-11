@@ -20,7 +20,7 @@
             </v-list-item>
         </template>
         <v-skeleton-loader type="list-item" v-if="loading"></v-skeleton-loader>
-        <v-list-item v-for="(file, i) in musicFolder.musics" @click="startPlay(file.music)" :ripple="!file.error"
+        <v-list-item v-for="(file, i) in musicFolder.musics" @click="startPlay(file)" :ripple="!file.error"
             :prepend-icon="musicIcon(file)" :base-color="hasErrorStyle(file)"
             v-on:mouseover="hoveringId = file.music.id" v-on:mouseleave="hoveringId = undefined">
             <v-list-item-title v-if="!file.error">{{ file.music.name }} </v-list-item-title>
@@ -29,6 +29,15 @@
                 <v-divider color="error"></v-divider>
                 Server log: "{{ file.error }}"
             </v-alert>
+            <template v-slot:append><v-icon color="warning" v-if="!file.saved">{{
+                mdiContentSaveAlertOutline
+                    }}
+
+                </v-icon>
+            </template>
+            <v-tooltip v-if="!file.saved" activator="parent" location="end">Music not saved, will not be available
+                in
+                filtering</v-tooltip>
         </v-list-item>
 
         <MusicTreeGroup v-for="(subFolder, i) in musicFolder.folders" v-model:node="musicFolder.folders[i]"
@@ -37,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { mdiCloseCircle, mdiFileMusicOutline, mdiFolder, mdiFolderOpen, mdiPlay } from '@mdi/js';
+import { mdiCloseCircle, mdiContentSaveAlertOutline, mdiFileMusicOutline, mdiFolder, mdiFolderOpen, mdiPlay } from '@mdi/js';
 import { PLAYLIST_TYPES } from '~/commons/constants';
 import type { File, Folder, Music } from '~/commons/interfaces';
 import { postAPI } from '~/commons/restAPI';
@@ -60,8 +69,8 @@ const props = withDefaults(defineProps<{ depth?: number }>(), {
 const musicFolder = defineModel('node', { type: {} as PropType<Folder>, required: true });
 const hasContent = computed(() => !!musicFolder.value.musics.length || !!musicFolder.value.folders.length);
 
-function startPlay(music: Music) {
-    playlist.setCurrentPlaying(music);
+function startPlay(file: File) {
+    playlist.setCurrentPlaying(file);
 }
 
 async function loadFolderContent(subFolder: Folder) {

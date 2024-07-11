@@ -11,7 +11,7 @@
         <v-container fluid v-if="dataPending">
             <v-row dense justify="start">
                 <v-col cols="3" v-for="n in 3">
-                    <v-skeleton-loader type="card"></v-skeleton-loader>
+                    <v-skeleton-loader :type="isCard ? 'card' : 'list-item'"></v-skeleton-loader>
                 </v-col>
             </v-row>
         </v-container>
@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { mdiAccountBoxOutline, mdiCloseCircle, mdiFormatListText } from '@mdi/js';
-import type { Artist } from '~/commons/interfaces';
+import type { Artist, ArtistList } from '~/commons/interfaces';
 import { getAPI, writeInfoLogs } from '~/commons/restAPI';
 import { createGeomData } from '~/commons/utils';
 import NavigatorToolbar from '~/components/NavigatorToolbar.vue';
@@ -53,13 +53,21 @@ async function loadArtists() {
         writeInfoLogs("skip artist refresh");
         return
     }
+
+    return await reloadArtists();
+}
+
+async function reloadArtists() {
+    dataPending.value = true;
     const res = await getAPI(`/api/artist/list`, 'loading artists list');
+    dataPending.value = false;
     if (!res) {
         return;
     }
     mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
     dbCacheStore.setArtistsData(res);
-    return res;
+
+    return res
 }
 
 //@ts-ignore

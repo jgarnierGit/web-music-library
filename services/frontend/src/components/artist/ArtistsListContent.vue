@@ -7,11 +7,9 @@
                     @click="tracksView()">{{ artist.tracks_count }}
                     tracks</button>
                 <v-divider></v-divider>
-                <v-chip @click="genresView()" color="secondary" size="small" variant="outlined" density="compact">
-                    Genre1
-                </v-chip> <v-chip @click="genresView()" color="secondary" size="small" variant="outlined"
-                    density="compact">
-                    Genre2
+                <v-chip @click="genresView(genre.id)" color="primary" size="small" variant="outlined" density="compact"
+                    v-for="genre in artist.genres">
+                    {{ genre.name }}
                 </v-chip>
             </v-list-item-subtitle>
             <template v-slot:prepend>
@@ -39,7 +37,7 @@ function tracksView() {
     console.log("songs");
 }
 
-function genresView() {
+function genresView(id: string) {
     console.log("genre");
 }
 </script>

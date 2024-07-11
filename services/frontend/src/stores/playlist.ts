@@ -1,16 +1,17 @@
 import { defineStore } from "pinia";
-import type { Music } from "~/commons/interfaces";
+import type { File, Music } from "~/commons/interfaces";
 import { postAPI } from "~/commons/restAPI";
 
 export const usePlaylistStore = defineStore('playlist', () => {
-    const currentPlaying = ref<Music>();
+    const currentPlaying = ref<File>();
     const filter = ref<{ type: string, targetIds: string[] }>();
-    const nextSong = ref<Music>();
+    const nextSong = ref<File>();
+    const fetchingNextSong = ref(false);
 
     const isPlaying = computed(() => !!currentPlaying.value);
 
-    function setCurrentPlaying(music: Music) {
-        currentPlaying.value = music;
+    function setCurrentPlaying(file: File) {
+        currentPlaying.value = file;
     }
 
     async function setFilter(type: string, targetIds: string[]) {
@@ -22,8 +23,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
         filter.value = undefined;
     }
 
-    function setNextSong(music: Music) {
-        nextSong.value = music;
+    function setNextSong(file: File) {
+        nextSong.value = file;
     }
 
     function playNextSong() {
@@ -32,6 +33,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
     }
 
     async function setRandomNextSong() {
+        fetchingNextSong.value = true;
         let response;
         if (filter.value) {
             response = await postAPI(`/api/music/getRandom`, `get next random song with filtering ${filter.value}`, { filter: filter.value });
@@ -39,11 +41,13 @@ export const usePlaylistStore = defineStore('playlist', () => {
         else {
             response = await postAPI(`/api/music/getRandom`, 'get next random song');
         }
+        fetchingNextSong.value = false;
         if (!response) {
             return
         }
-        setNextSong(response);
+        const f = { music: response, saved: true } as File;
+        setNextSong(f);
     }
 
-    return { currentPlaying, isPlaying, filter, nextSong, setCurrentPlaying, setFilter, playNextSong, setNextSong, setRandomNextSong, resetFilter };
+    return { currentPlaying, isPlaying, filter, nextSong, fetchingNextSong, setCurrentPlaying, setFilter, playNextSong, setNextSong, setRandomNextSong, resetFilter };
 });

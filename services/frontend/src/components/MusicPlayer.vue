@@ -45,7 +45,7 @@ const projectM = useProjectMStore();
 const audioPath = ref<string>();
 const playlist = usePlaylistStore();
 const audioPlayer = ref();
-const { currentPlaying, nextSong } = storeToRefs(playlist);
+const { currentPlaying, nextSong, fetchingNextSong } = storeToRefs(playlist);
 const { isVisible, isFocused } = storeToRefs(projectM);
 
 // audioPath.value = `/demo.mp3`; //TODO  mock file system
@@ -53,7 +53,18 @@ const { isVisible, isFocused } = storeToRefs(projectM);
 const viewerIcon = computed(() => isVisible.value ? mdiMonitorOff : mdiMonitor)
 const viewerIconMode = computed(() => isFocused.value ? mdiFullscreenExit : mdiFullscreen)
 const focusTooltip = computed(() => isFocused.value ? "Background mode" : "Focus mode")
-const nextSongTooltip = computed(() => nextSong && nextSong.value ? `${nextSong.value.artist?.name} - ${nextSong.value.name}` : 'Fetching next song...');
+const nextSongTooltip = computed(() => formatNextSongLabel());
+
+
+function formatNextSongLabel() {
+    if (!nextSong || !nextSong.value) {
+        return fetchingNextSong.value ? 'Fetching next track...' : 'No track';
+    }
+    if (!nextSong.value.music.artist) {
+
+    }
+    return (nextSong.value.music.artist ? `${nextSong.value.music.artist.name} - ` : '') + nextSong.value.music.name
+}
 
 onMounted(() => {
     audioPlayer.value.onerror = function (err: any) {
@@ -66,13 +77,15 @@ onMounted(() => {
 
 watch(currentPlaying, async (newVal) => {
     if (newVal) {
-        audioPath.value = `${AUDIO_BASE_URL}${newVal.path}`;
+        audioPath.value = `${AUDIO_BASE_URL}${newVal.music.path}`;
 
         writeInfoLogs(`playing ${audioPath.value}`);
         enableAudio(audioPlayer.value, false);
-        const response = await postAPI(`/api/music/${newVal.id}/increment/`, 'incrementing play count for artist');
-        if (!response) {
-            return
+        if (newVal.saved) {
+            const response = await postAPI(`/api/music/${newVal.music.id}/increment/`, 'incrementing play count for artist');
+            if (!response) {
+                return
+            }
         }
         playlist.setRandomNextSong();
     }

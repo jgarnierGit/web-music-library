@@ -18,7 +18,7 @@
                 <v-col>
                     <v-row>
                         <v-col v-if="currentPlaying">
-                            current playing : {{ currentPlaying.name }} - {{ currentPlaying.artist.name }}
+                            current playing : {{ currentPlayingFormat }}
                         </v-col>
                         <v-divider vertical v-if="currentPlaying && filter" />
                         <v-col v-if="filter">
@@ -46,6 +46,19 @@ const projectM = useProjectMStore();
 const playlistStore = usePlaylistStore();
 const { currentPlaying, filter } = storeToRefs(playlistStore);
 const { isVisible, isFocused } = storeToRefs(projectM);
+
+const currentPlayingFormat = computed(() => formatCurrentPlaying())
+function formatCurrentPlaying() {
+    if (!currentPlaying.value) {
+        return ''
+    }
+    if (currentPlaying.value.saved) {
+        return `${currentPlaying.value.music.artist.name} - ${currentPlaying.value.music.name}`
+    }
+    else {
+        return `${currentPlaying.value.music.name}`
+    }
+}
 
 </script>
 

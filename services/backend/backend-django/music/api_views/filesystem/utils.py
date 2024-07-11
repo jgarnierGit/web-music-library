@@ -1,7 +1,9 @@
 from mutagen.mp3 import MP3
 from mutagen.oggvorbis import OggVorbis
 from mutagen.wave import WAVE
-from datetime import datetime, date
+from datetime import datetime
+from typing import List
+import re
 
 
 class Metadata:
@@ -10,7 +12,7 @@ class Metadata:
         self.artist: str = None
         self.thumbnail: str = None
         self.album_release_date: int = None
-        self.genre: str = None
+        self.genre: List[str] = []
         self.track_duration: str = None
         self.track_number: str = None
         self.bpm: int = None
@@ -65,7 +67,11 @@ def get_metadata(file_path) -> Metadata:
         print(f"{file_path}: Release date album extraction error : {e}")
 
     try:
-        metadata.genre = audio.get("TCON", [None])[0]
+        metadata.genre = [
+            tcon.strip()
+            for tcon in re.split(r"[/,;]", audio.get("TCON", [""])[0])
+            if tcon and len(tcon.strip()) > 0
+        ]
     except Exception as e:
         print(f"{file_path}: Genre extraction error : {e}")
     try:

@@ -10,7 +10,8 @@
         <template v-slot:append>
             <v-btn :icon="mdiCloseBox" size="small" color="error" variant="text" @click="cancelJob()" />
         </template>
-        <v-list-item-title>Scanning... ({{ refreshingCurrentState }} files)</v-list-item-title>
+        <v-list-item-title>Scanning... </v-list-item-title>
+        <v-list-item-subtitle>({{ (refreshingCurrentState || "0").toLocaleString() }} files)</v-list-item-subtitle>
     </v-list-item>
 
     <v-list-item value="scan" :ripple="false" :active="false" v-else>

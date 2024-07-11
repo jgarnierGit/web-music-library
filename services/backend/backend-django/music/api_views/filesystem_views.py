@@ -6,7 +6,6 @@ from rest_framework.views import APIView
 import json
 from ..tasks import parse_filesystem
 from ..consts import MUSIC_PATH, AUDIO_EXTENSIONS
-from ..services.filesystem import updateDb
 
 
 def get_tree(path, level):
@@ -35,9 +34,12 @@ def get_tree(path, level):
             ):
                 existing_music = Music.objects.filter(path=p_path)
                 if not existing_music:
-                    music_result = updateDb(p, p_path)
+                    music_result = {
+                        "music": Music(name=p, path=p_path),
+                        "saved": False,
+                    }
                 else:
-                    music_result = {"music": existing_music.first()}
+                    music_result = {"music": existing_music.first(), "saved": True}
                 if music_result["music"]:
                     music_dict = MusicSerializer(music_result["music"]).data
                     music_result["music"] = music_dict

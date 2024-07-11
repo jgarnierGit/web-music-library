@@ -1,19 +1,17 @@
 <template>
     <v-toolbar density="compact">
         <v-toolbar-title>{{ title }}
-            <v-badge :content="`${countLoaded} / ${isRefreshing ? '...' : dbCount}`" inline />
+            <v-badge :content="`${countLoaded.toLocaleString()} / ${isRefreshing ? '...' : dbCount.toLocaleString()}`"
+                inline />
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
             <slot />
-            <v-divider vertical></v-divider>
-            <v-btn icon @click="refreshCount()" :disabled="isRefreshing"><v-icon>{{ mdiRefresh }}</v-icon></v-btn>
         </v-toolbar-items>
     </v-toolbar>
 </template>
 
 <script setup lang="ts">
-import { mdiRefresh } from '@mdi/js';
 import { writeInfoLogs } from '~/commons/restAPI';
 const fileSystemStore = useFilesystemStore();
 const { refreshJobId, refreshingCurrentState } = storeToRefs(fileSystemStore);
@@ -30,12 +28,16 @@ const props = withDefaults(defineProps<{
 const { pending: countPending, data: dbCount } = await useLazyAsyncData(`${props.title}CountTotal`, () => props.countRefreshCallback());
 const isRefreshing = computed(() => countPending.value);
 
-watch(refreshJobId, (newVal) => {
+watch(refreshJobId, (newVal, oldVal) => {
     if (!props.autoRefresh) {
         return;
     }
     if (newVal) {
         batchRefreshCount();
+    }
+    else if (oldVal) {
+        // refresh one last time
+        refreshCount();
     }
 });
 
@@ -56,7 +58,7 @@ function batchRefreshCount() {
 
     setTimeout(() => {
         batchRefreshCount()
-    }, 5000);
+    }, 10000);
 }
 
 async function refreshCount() {
