@@ -9,12 +9,12 @@
   <v-row>
     <v-col>
       <v-sheet rounded="lg">
-        <ArtistsView />
+        <LibraryView />
       </v-sheet>
     </v-col>
   </v-row>
 </template>
 <script setup lang="ts">
-import ArtistsView from '~/components/ArtistsView.vue';
+import LibraryView from '~/components/LibraryView.vue';
 import MusicTree from '~/components/filesystem/MusicTree.vue';
 </script>

@@ -77,7 +77,7 @@ async function loadFolderContent(subFolder: Folder) {
     loading.value = true;
     try {
         // load root content
-        const getRes = await postAPI('/api/folder/list', 'loading sub folder content', { path: subFolder.path });
+        const getRes = await postAPI('/api/folders/list', 'loading sub folder content', { path: subFolder.path });
         if (!getRes) {
             return;
         }

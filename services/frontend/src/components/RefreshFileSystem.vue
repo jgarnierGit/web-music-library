@@ -99,7 +99,7 @@ watch(refreshJobContent, async (jobRes) => {
 
 async function refresh(forceRefresh: boolean) {
     overlay.value = false;
-    const jobRes = await getAPI(`/api/folder/refresh?force=${forceRefresh}`, `Scanning filesystem ${forceRefresh ? 'deeply' : 'quickly'}`)
+    const jobRes = await getAPI(`/api/folders/refresh?force=${forceRefresh}`, `Scanning filesystem ${forceRefresh ? 'deeply' : 'quickly'}`)
     if (!jobRes) {
         return;
     }

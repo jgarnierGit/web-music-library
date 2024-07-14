@@ -132,10 +132,61 @@ class ArtistSerializer(serializers.ModelSerializer):
         return data
 
 
+class ArtistUpdaterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artist
+        exclude = ["genres"]
+
+    # overwrite geom serialization
+    def to_representation(self, instance):
+        data = {**instance.__dict__}
+        # Remove the _state field from the data dictionary
+        del data["_state"]
+        # Serialize the geom field as a GeoJSON object
+        if instance.geom:
+            geom_dict = json.loads(instance.geom.geojson)
+            data["geom"] = geom_dict
+
+        return data
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = "__all__"
+
+    # as dict
+    def to_representation(self, instance):
+        data = {**instance.__dict__}
+        # Remove the _state field from the data dictionary
+        del data["_state"]
+        return data
+
+
 class ArtistNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         fields = ["name"]
+
+
+class AlbumCardSerializer(AlbumSerializer):
+    tracks_count = serializers.IntegerField(read_only=True)
+    genres = GenreSerializer(read_only=True, many=True)
+
+    class Meta(AlbumSerializer.Meta):
+        fields = list(AlbumSerializer.Meta.fields) + [
+            "tracks_count",
+            "genres",
+        ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["genres"] = GenreSerializer(
+            instance.genres.all(), many=True
+        ).data
+        if "_prefetched_objects_cache" in representation:
+            del representation["_prefetched_objects_cache"]
+        return representation
 
 
 class ArtistCardSerializer(ArtistSerializer):
@@ -160,10 +211,17 @@ class ArtistCardSerializer(ArtistSerializer):
         return representation
 
 
-class AlbumSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = "__all__"
+class GenreCardSerializer(serializers.ModelSerializer):
+    artists_count = serializers.IntegerField(read_only=True)
+    dates = serializers.ListField(
+        child=serializers.IntegerField(read_only=True), allow_empty=True
+    )
+
+    class Meta(GenreSerializer.Meta):
+        fields = list(GenreSerializer.Meta.fields) + [
+            "artists_count",
+            "dates",
+        ]
 
 
 class MusicSerializer(serializers.ModelSerializer):

@@ -47,7 +47,7 @@ async function loadFolderContent() {
 async function refreshRoot() {
     snackbarStore.setContent(`Loading music content`, SNACKBAR_TIMEOUT, "info");
     // load root content
-    const getRes = await postAPI('/api/folder/list', 'loading file system root tree');
+    const getRes = await postAPI('/api/folders/list', 'loading file system root tree');
     if (!getRes) {
         writeWarnLogs("Got empty system tree");
         return
@@ -58,7 +58,7 @@ async function refreshRoot() {
 }
 
 async function refreshCountFileSystem() {
-    const res = await getAPI(`/api/music/count`, 'refresh musics filesystem count');
+    const res = await getAPI(`/api/musics/count`, 'refresh musics filesystem count');
     if (!res) {
         return "No data";
     }

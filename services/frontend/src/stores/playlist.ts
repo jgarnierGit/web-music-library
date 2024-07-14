@@ -36,10 +36,10 @@ export const usePlaylistStore = defineStore('playlist', () => {
         fetchingNextSong.value = true;
         let response;
         if (filter.value) {
-            response = await postAPI(`/api/music/getRandom`, `get next random song with filtering ${filter.value}`, { filter: filter.value });
+            response = await postAPI(`/api/musics/getRandom`, `get next random song with filtering ${filter.value}`, { filter: filter.value });
         }
         else {
-            response = await postAPI(`/api/music/getRandom`, 'get next random song');
+            response = await postAPI(`/api/musics/getRandom`, 'get next random song');
         }
         fetchingNextSong.value = false;
         if (!response) {

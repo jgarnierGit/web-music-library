@@ -18,9 +18,9 @@
         Server log: "{{ dataError }}"
       </v-alert>
     </v-container>
-    <v-infinite-scroll v-else height="80vh" :items="artistsData.artists" item-height="48" @load="load">
+    <v-infinite-scroll v-else height="80vh" :items="artistsData.contents" item-height="48" @load="load">
       <v-list-item :subtitle="`${artist.country_name ?? 'NO DATA'}`" :title="`${artist.name}`"
-        v-for="(artist, index) in artistsData.artists" :key="artist.id">
+        v-for="(artist, index) in artistsData.contents" :key="artist.id">
         <template v-slot:prepend>
           <v-icon>{{ mdiAccount }}</v-icon>
         </template>
@@ -85,7 +85,7 @@
 <script setup lang="ts">
 import { mdiAccount, mdiCloseCircle, mdiContentSaveOff, mdiOpenInNew, mdiPencil, mdiWeb } from '@mdi/js';
 import { getAPI, postAPI, putAPI, writeErrorLogs, writeInfoLogs } from '~/commons/restAPI';
-import type { Artist, ArtistMapEditorContext } from '~/commons/interfaces';
+import type { Artist, ArtistMapEditorContext, ContentList } from '~/commons/interfaces';
 import { createGeomData } from '~/commons/utils';
 import { ACTIVE_GEOM_FILTER, SNACKBAR_TIMEOUT } from '~/commons/constants';
 import LocationValidatorListItem from './LocationValidatorListItem.vue';
@@ -97,18 +97,17 @@ const mapStore = useSpatialMapStore();
 const geolocalizerStore = useGeolocalizerStore();
 const snackbarStore = useSnackbarStore();
 const dbCacheStore = useDbCacheStore();
-const { artistsData, artistDataGeomOnly, countLoadedArtists } = storeToRefs(dbCacheStore);
+const { artistsData, countLoadedArtists, artistDataGeomOnly } = storeToRefs(dbCacheStore);
 const { mappingRefCountries } = storeToRefs(geolocalizerStore);
 const { editionId } = storeToRefs(mapStore);
 const { pending: dataPending, error: dataError } = await useLazyAsyncData('artistsListData', () => loadArtists());
 const hasCountryGuessPending = computed(() => (artistId: string) => !!guessCountry.value[artistId]);
 const hasArtistManyCountries = computed(() => (artistId: string) => guessCountry.value[artistId].length > 1);
 const artistCountryContent = computed(() => (artistId: string) => guessCountry.value ? guessCountry.value[artistId] : "");
-
 const guessCountry = ref({} as any);
 const overlay = ref(false);
 const editionContext = ref({} as ArtistMapEditorContext);
-const filters = ref([] as any[]);
+const filters = ref([{ type: "geom", value: undefined as string | undefined }]);
 
 onBeforeUnmount(() => {
   mapStore.closeEdition();
@@ -116,7 +115,7 @@ onBeforeUnmount(() => {
 
 watch(artistsData, (newVal) => {
   if (!newVal) {
-    mapStore.updateLayerData(createGeomData(artistsData.value.artists.filter((artist: Artist) => artist.geom)));
+    mapStore.updateLayerData(createGeomData(artistsData.value.contents.filter((artist: Artist) => artist.geom)));
   }
 });
 
@@ -125,24 +124,24 @@ async function loadArtists() {
     writeInfoLogs("skip artist refresh");
     return
   }
-  const res = await getAPI(`/api/artist/list?limit=20`, 'loading artists list');
+  const res = await getAPI(`/api/artists/list?limit=20`, 'loading artists list');
   if (!res) {
     return;
   }
-  mapStore.updateLayerData(createGeomData(res.artists.filter((artist: Artist) => artist.geom)));
-  dbCacheStore.setArtistsData(res);
+  mapStore.updateLayerData(createGeomData(res.contents.filter((artist: Artist) => artist.geom)));
+  dbCacheStore.setArtistsData({ contents: res.contents } as ContentList<Artist>);
   return res;
 }
 
 //@ts-ignore
 async function load({ done }) {
   const params = {
-    offset: artistsData.value.artists.length,
+    offset: artistsData.value.contents.length,
     filters: filters.value
   };
-  const res: any = await postAPI(`/api/artist/list`, 'loading more artists', params);
-  if (res.artists && res.artists.length > 0) {
-    artistsData.value.artists.push(...res.artists)
+  const res: any = await postAPI(`/api/artists/list`, 'loading more artists', params);
+  if (res.contents && res.contents.length > 0) {
+    artistsData.value.contents.push(...res.contents)
     done('ok')
   }
   else {
@@ -151,10 +150,11 @@ async function load({ done }) {
 }
 
 async function updateFilter(filterValue: string | undefined) {
-  if (ACTIVE_GEOM_FILTER === filterValue && artistDataGeomOnly.value.artists.length > 0) {
+  if (ACTIVE_GEOM_FILTER === filterValue && artistDataGeomOnly.value.contents.length > 0) {
     generateFilters("geom", filterValue);
     // reusing in memory artist geoms already loaded by map.
-    artistsData.value.artists = artistDataGeomOnly.value.artists;
+    // TODO aaply slice over artistDataGeomOnly for infinite scroll, + update setArtistDataGeomOnly when saving new geom country
+    artistsData.value.contents = artistDataGeomOnly.value.contents;
     return;
   }
   else {
@@ -163,9 +163,16 @@ async function updateFilter(filterValue: string | undefined) {
       limit: 15,
       filters: filters.value
     };
-    const res = await postAPI(`/api/artist/list`, `filtering artists list ${filterValue}`, params);
-    if (res.artists && res.artists.length > 0) {
-      artistsData.value.artists = res.artists;
+    dataPending.value = true;
+    try {
+      const res = await postAPI(`/api/artists/list`, `filtering artists list ${filterValue}`, params);
+      if (!res.contents) {
+        return
+      }
+      artistsData.value.contents = res.contents;
+    }
+    finally {
+      dataPending.value = false;
     }
   }
 }
@@ -201,14 +208,24 @@ async function saveGuessingLocation(artist: Artist, countryName: string) {
   if (!guessCountry.value[artist.id]) {
     return;
   }
-
-  artist.country_name = countryName;
+  const artistToSave = JSON.parse(JSON.stringify(artist));
+  artistToSave.country_name = countryName;
   const geom = mapStore.getGeomFromLabel(countryName);
-  artist.geom = geom;
-  mapStore.updateLayerData(createGeomData([artist]));
-  await putAPI(`/api/artist/${artist.id}`, 'saving artist geolocalizer', artist);
-  delete guessCountry.value[artist.id];
-  overlay.value = false;
+  artistToSave.geom = geom;
+  try {
+    await putAPI(`/api/artist/${artist.id}`, 'saving artist geolocalizer', artistToSave);
+    artist.country_name = artistToSave.country_name;
+    artist.geom = artistToSave.geom;
+    mapStore.updateLayerData(createGeomData([artist]));
+  } catch (err) {
+    snackbarStore.setContent(`Error while loading saving artist ${artist.name}, check the logs`, SNACKBAR_TIMEOUT, "error");
+    writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
+  }
+  finally {
+    delete guessCountry.value[artist.id];
+    overlay.value = false;
+  }
+
 }
 
 function cancelGuessingLocation(artist: Artist) {
@@ -222,13 +239,20 @@ async function switchEdition(artist: Artist) {
   if (editionId.value === artist.id) {
     mapStore.closeEditionId(artist.id);
     try {
+      const artistToSave = JSON.parse(JSON.stringify(artist));
+      artistToSave.country_name = editionContext.value.artist.country_name;
+      artistToSave.geom = editionContext.value.artist.geom;
+
+      await putAPI(`/api/artist/${artist.id}`, 'saving artist', artistToSave);
       artist.country_name = editionContext.value.artist.country_name;
       artist.geom = editionContext.value.artist.geom;
-      await putAPI(`/api/artist/${artist.id}`, 'saving artist', artist);
       mapStore.updateLayerData(createGeomData([artist]));
     } catch (err) {
       snackbarStore.setContent(`Error while loading saving artist ${artist.name}, check the logs`, SNACKBAR_TIMEOUT, "error");
       writeErrorLogs(`/api/artist/${artist.id} : ${err}`);
+    }
+    finally {
+      mapStore.closeEditionId(editionId.value);
     }
     return;
   }
@@ -251,7 +275,7 @@ function cancelEdition(artist: Artist) {
 }
 
 async function refreshCountArtists() {
-  const res = await getAPI(`/api/artist/count`, 'refresh artists count');
+  const res = await getAPI(`/api/artists/count`, 'refresh artists count');
   if (!res) {
     return "No data";
   }

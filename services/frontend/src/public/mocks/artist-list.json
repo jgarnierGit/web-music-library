@@ -1,5 +1,5 @@
 {
-    "artists": [
+    "contents": [
         {
             "id": "d23d09ac-578d-4398-abb3-cf3029ca657f",
             "name": "Earnestine Espinoza",
@@ -15,7 +15,25 @@
             "count_played": 0,
             "count_skipped": 0,
             "tracks_count": 1,
-            "albums_count": 0
+            "albums_count": 0,
+            "genres": [
+                {
+                    "id": "3b9f31a5-fe39-4518-b99f-f785688f649e",
+                    "name": "Punk"
+                },
+                {
+                    "id": "f3a13954-80af-480d-83e3-382f39a19a1f",
+                    "name": "Alternative"
+                },
+                {
+                    "id": "85b5870a-3c7e-40d3-b2c2-ddfb999a0504",
+                    "name": "Reggae"
+                },
+                {
+                    "id": "6b4f04fa-bbed-48a4-9410-ce6a57648c93",
+                    "name": "Comedy"
+                }
+            ]
         },
         {
             "id": "7c551693-f08b-4cd5-b77c-a85630f07933",

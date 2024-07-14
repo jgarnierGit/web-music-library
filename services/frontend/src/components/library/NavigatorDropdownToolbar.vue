@@ -1,7 +1,8 @@
 <template>
     <v-toolbar density="compact">
-        <v-toolbar-title>
-            {{ title }}
+        <v-toolbar-title justify="center">
+            <v-select :items="LIBRARY_VIEWS" v-model="activeNavigatorView.target" density="compact"
+                class="navigator-dropdown"></v-select>
             <v-badge
                 :content="`${countLoaded.toLocaleString()} / ${isRefreshing ? '...' : (dbCount || 0).toLocaleString()}`"
                 inline />
@@ -14,18 +15,21 @@
 </template>
 
 <script setup lang="ts">
+import { LIBRARY_VIEWS } from '~/commons/constants';
 import { writeInfoLogs } from '~/commons/restAPI';
 const fileSystemStore = useFilesystemStore();
-const { refreshJobId, refreshingCurrentState } = storeToRefs(fileSystemStore);
+const { refreshJobId, refreshingCurrentState, activeNavigatorView } = storeToRefs(fileSystemStore);
 const previousRefreshingState = ref();
 
 const props = withDefaults(defineProps<{
     title: string,
     countLoaded: number,
     countRefreshCallback: () => Promise<any>,
-    autoRefresh?: boolean
+    autoRefresh?: boolean,
+    toolbarContextId?: string
 }>(), {
-    autoRefresh: false
+    autoRefresh: false,
+    toolbarContextId: ''
 });
 const { pending: countPending, data: dbCount } = await useLazyAsyncData(`${props.title}CountTotal`, () => props.countRefreshCallback());
 const isRefreshing = computed(() => countPending.value);
@@ -69,3 +73,12 @@ async function refreshCount() {
     countPending.value = false;
 }
 </script>
+<style>
+.navigator-dropdown {
+    display: inline-flex;
+
+    .v-input__details {
+        display: none;
+    }
+}
+</style>

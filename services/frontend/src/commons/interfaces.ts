@@ -16,6 +16,18 @@ interface File {
     saved: boolean
 }
 
+interface Genre {
+    id: string,
+    name: string,
+    artists_count: number,
+    dates: number[]
+}
+
+interface Year {
+    id: string,
+    date: number
+}
+
 interface Music {
     id: string,
     path: string,
@@ -37,10 +49,21 @@ interface Artist {
     name: string,
     geom: any,
     country_name: string,
+    genres: Genre[],
+    albums_count: number,
+    tracks_count: number,
 }
 
-interface ArtistList {
-    artists: Artist[]
+interface Album {
+    id: string,
+    name: string,
+    date: number,
+    genres: Genre[],
+    tracks_count: number
+}
+
+interface ContentList<T> {
+    contents: T[]
 }
 
 interface ArtistMapEditorContext {
@@ -64,4 +87,4 @@ interface RestAPI {
     execDeleteAPI: (request: string, context: string, playload: any) => Promise<any>
 }
 
-export type { Folder, File, Music, Artist, ArtistList, ArtistMapEditorContext, GeomData, RestAPI }
+export type { Folder, File, Music, Album, Artist, Genre, Year, ContentList, ArtistMapEditorContext, GeomData, RestAPI }

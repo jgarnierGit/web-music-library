@@ -29,39 +29,19 @@ var restAPI: RestAPI = {
     },
 
     execGetAPI: async (request: string, context: string, base_url?: string) => {
-        try {
-            const axiosResult = await axiosInstance.get(request);
-            return Promise.resolve(axiosResult);
-        } catch (err) {
-            return Promise.reject(err);
-        }
+        return await axiosInstance.get(request);
     },
 
     execPostAPI: async (request: string, context: string, playload?: any) => {
-        try {
-            const axiosResult = await axiosInstance.post(request, playload);
-            return Promise.resolve(axiosResult);
-        } catch (err) {
-            return Promise.reject(err);
-        }
+        return await axiosInstance.post(request, playload);
     },
 
     execPutAPI: async (request: string, context: string, playload: any) => {
-        try {
-            const axiosResult = await axiosInstance.put(request, playload);
-            return Promise.resolve(axiosResult);
-        } catch (err) {
-            return Promise.reject(err);
-        }
+        return await axiosInstance.put(request, playload);
     },
 
     execDeleteAPI: async (request: string, context: string, playload: any) => {
-        try {
-            const axiosResult = await axiosInstance.delete(request, playload);
-            return Promise.resolve(axiosResult);
-        } catch (err) {
-            return Promise.reject(err);
-        }
+        return await axiosInstance.delete(request, playload);
     }
 };
 
@@ -98,8 +78,7 @@ if (window.__TAURI__) {
         const url = (base_url ?? API_BASE_URL) + request;
         this.writeInfoLogs(`get url : ${url}`);
         return await fetch(url, {
-            method: "GET",
-            //  responseType: ResponseType.JSON
+            method: "GET"
         });
     }
 
@@ -111,8 +90,7 @@ if (window.__TAURI__) {
         if (playload) {
             params.body = Body.json(playload);
         }
-        const result = await fetch(API_BASE_URL + request, params);
-        return result;
+        return await fetch(API_BASE_URL + request, params);
     }
 
     restAPI.execPutAPI = async function (request: string, context: string, playload: any): Promise<any> {
@@ -152,6 +130,7 @@ async function getAPI(request: string, context: string) {
         console.error(`error with the server, make sure it is started ${err}`);
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
         restAPI.writeErrorLogs(`${request} : ${err}`);
+        return Promise.reject(err);
     }
 }
 
@@ -166,6 +145,7 @@ async function postAPI(request: string, context: string, playload?: any) {
     } catch (err) {
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
         restAPI.writeErrorLogs(`${request} : ${err}`);
+        return Promise.reject(err);
     }
 }
 
@@ -180,6 +160,7 @@ async function putAPI(request: string, context: string, playload: any) {
     } catch (err) {
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
         restAPI.writeErrorLogs(`${request} : ${err}`);
+        return Promise.reject(err);
     }
 }
 
@@ -194,6 +175,7 @@ async function deleteAPI(request: string, context: string, playload?: any) {
     } catch (err) {
         snackbarStore.setContent(`Error while ${context}, check the logs`, SNACKBAR_TIMEOUT, "error");
         restAPI.writeErrorLogs(`${request} : ${err}`);
+        return Promise.reject(err);
     }
 }
 

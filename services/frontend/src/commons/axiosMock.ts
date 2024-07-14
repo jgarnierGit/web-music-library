@@ -6,8 +6,8 @@ import { axiosInstance, writeInfoLogs } from './restAPI';
 
 export async function mockAxios() {
     var mock = new MockAdapter(axiosInstance, { delayResponse: 500 });
-    mock.onGet("/api/artist/count").reply(200, { result: "1000" });
-    mock.onGet("api/music/count").reply(200, { result: "25000" });
+    mock.onGet("/api/artists/count").reply(200, { result: "1000" });
+    mock.onGet("api/musics/count").reply(200, { result: "25000" });
     const musicRes = {
         name: "fake", album: "fakeAlbum", artist: { name: "fakeArtist" },
         count_played: 2
@@ -17,24 +17,24 @@ export async function mockAxios() {
     const response = await fetch('./mocks/folder-list.json');
     const listFolderResult = await response.json();
 
-    mock.onPost('/api/folder/list').reply(200, listFolderResult);
+    mock.onPost('/api/folders/list').reply(200, listFolderResult);
 
     const responseArtists = await fetch('./mocks/artist-list.json');
     const listArtistsResult = await responseArtists.json();
 
-    mock.onGet('/api/artist/list').reply(200, { artists: listArtistsResult.artists.slice(0, 20) });
-    mock.onGet(/\/api\/artist\/list\?(limit=[0-9]+)?(&)?(offset\=[0-9]+)?/).reply((config) => {
+    mock.onGet('/api/artists/list').reply(200, { contents: listArtistsResult.contents.slice(0, 20) });
+    mock.onGet(/\/api\/artists\/list\?(limit=[0-9]+)?(&)?(offset\=[0-9]+)?/).reply((config) => {
         if (!config.url) {
-            return [200, { artists: [] }]
+            return [200, { contents: [] }]
         }
         const url = new URL(API_BASE_URL + config.url);
         const offset = parseInt(url.searchParams.get('offset') || '0', 10);
         const limit = 20;
-        const endIndex = Math.min(offset + limit, listArtistsResult.artists.length);
+        const endIndex = Math.min(offset + limit, listArtistsResult.contents.length);
         if (endIndex === offset) {
-            return [200, { artists: [] }]
+            return [200, { contents: [] }]
         }
-        return [200, { artists: listArtistsResult.artists.slice(offset, endIndex) }];
+        return [200, { contents: listArtistsResult.contents.slice(offset, endIndex) }];
     })
 
     mock.onPut(/\/api\/artist\/[\da-f\-]{36}/).reply(204);
@@ -50,13 +50,13 @@ export async function mockAxios() {
         return [200, { result: ["FR"] }]
     });
 
-    mock.onGet(/\/api\/folder\/refresh\?force=(true|false)/).reply(200, { result: "7c551693-f08b-4cd5-b77c-a85630f07939" });
+    mock.onGet(/\/api\/folders\/refresh\?force=(true|false)/).reply(200, { result: "7c551693-f08b-4cd5-b77c-a85630f07939" });
     const folderRefreshContent = { "task_id": "34b60af4-e4f1-4d7a-8a01-9d2f3fb68916", "task_status": "PROGRESS", "task_result": { "current": 1000 } };
     mock.onGet(/\/api\/job\/[\da-f\-]{36}/).reply(200, folderRefreshContent);
 
     mock.onDelete(/\/api\/job\/[\da-f\-]{36}/).reply(204);
 
-    mock.onGet("/api/map/getGeometries").reply(200, { artists: listArtistsResult.artists.filter((artist: Artist) => !!artist.geom) });
+    mock.onGet("/api/map/getGeometries").reply(200, { contents: listArtistsResult.contents.filter((artist: Artist) => !!artist.geom) });
     writeInfoLogs("mocked everything");
 }
 
