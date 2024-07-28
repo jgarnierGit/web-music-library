@@ -35,5 +35,5 @@ urlpatterns = [
         name="get_next_music_random",
     ),
     path("years/count", views.year_count, name="get_count_years"),
-    # path("years/list", views.YearsListView.as_view(), name="get_years"),
+    path("years/list", views.YearsListView.as_view(), name="get_years"),
 ]

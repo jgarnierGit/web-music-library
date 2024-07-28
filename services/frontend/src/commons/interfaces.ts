@@ -25,7 +25,9 @@ interface Genre {
 
 interface Year {
     id: string,
-    date: number
+    date: number,
+    artists_count: number,
+    genres: Genre[],
 }
 
 interface Music {

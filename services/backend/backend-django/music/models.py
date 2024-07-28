@@ -114,6 +114,15 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
+class YearCardSerializer(serializers.ModelSerializer):
+    artists_count = serializers.IntegerField(read_only=True)
+    genres = serializers.JSONField()
+
+    class Meta:
+        model = Album
+        fields = ["date", "artists_count", "genres"]
+
+
 class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist

@@ -1,6 +1,7 @@
 from music.models import Artist, Genre, Album
-from django.db.models import Count
-from django.contrib.postgres.aggregates import ArrayAgg
+from django.db.models import Count, F
+from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
+from django.db.models.functions import JSONObject
 
 
 def get_albums_cards(limit: int, offset: int, filters=[]):
@@ -45,6 +46,26 @@ def get_genres_cards(limit: int, offset: int, filters=[]):
             case _:
                 pass
 
+    return query[offset : offset + limit]
+
+
+def get_years_cards(limit: int, offset: int, filters=[]):
+    query = (
+        Album.objects.values("date")
+        .annotate(
+            artists_count=Count("artist", distinct=True),
+            genres=JSONBAgg(
+                JSONObject(id=F("artist__genres__id"), name=F("artist__genres__name")),
+                distinct=True,
+            ),
+        )
+        .order_by("date")
+    )
+
+    for filter in filters:
+        match filter["type"]:
+            case _:
+                pass
     return query[offset : offset + limit]
 
 

@@ -35,7 +35,7 @@ export const useDbCacheStore = defineStore('dbCache', () => {
         genresData.value = contents;
     }
     function setYearsData(contents: ContentList<Year>) {
-        genresData.value = contents;
+        yearsData.value = contents;
     }
 
     function setArtistDataGeomOnly(contents: ContentList<Artist>) {
